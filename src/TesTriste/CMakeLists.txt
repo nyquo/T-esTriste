@@ -1,0 +1,10 @@
+tet_add_executable(TesTriste
+    SOURCES
+        TesTriste.cpp
+    INCLUDES
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+        $<INSTALL_INTERFACE:include/>
+    LINKS
+    DEFINITIONS
+    RESSOURCES
+)
