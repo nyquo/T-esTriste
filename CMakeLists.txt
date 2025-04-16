@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.26)
 
 project(TesTriste LANGUAGES C CXX VERSION 0.1)
 
+include(FetchContent)
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/helper.cmake")
 
 set(default_build_type "RelWithDebInfo")
@@ -16,15 +17,10 @@ endif()
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_CLANG_TIDY
-  clang-tidy;
-  -format-style='file';
-  -header-filter=${CMAKE_CURRENT_SOURCE_DIR};
-)
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
 set(BUILD_SHARED_LIBS ON)
 
 add_subdirectory(src)
+add_subdirectory(extern)

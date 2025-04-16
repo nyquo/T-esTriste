@@ -1,6 +1,8 @@
+#include <glm/glm.hpp>
 #include <iostream>
 
 int main() {
-    std::cout << "Hello world!! \n";
+    glm::vec2 vec{ 0.0, 5.0 };
+    std::cout << "Hello world!! Here is a vec: " << vec.x << "," << vec.y << "\n";
     return 0;
 }

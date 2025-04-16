@@ -5,6 +5,7 @@ tet_add_executable(TesTriste
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
         $<INSTALL_INTERFACE:include/>
     LINKS
+        glm::glm
     DEFINITIONS
     RESSOURCES
 )

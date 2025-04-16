@@ -36,7 +36,12 @@ function(tet_add_executable AppName)
     target_compile_definitions(${AppName} PRIVATE ${PARAM_DEFINITIONS})
 
     set_target_properties(${AppName} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>)
-
+    set_target_properties(${AppName} PROPERTIES CXX_CLANG_TIDY
+        clang-tidy;
+        -format-style='file';
+        -header-filter=^${CMAKE_CURRENT_SOURCE_DIR};
+    )
+    
     # Inspired from https://discourse.cmake.org/t/copy-resources-to-build-folder/1010/5
     # Copy ressources next to executable
     if(PARAM_RESSOURCES)
@@ -68,7 +73,7 @@ function(tet_add_executable AppName)
 endfunction()
 
 
-# Create a new library for the SandboxOpenGL project
+# Create a new library for T-esTriste
 #
 # Usage:
 #   tet_add_executable(LibraryName
@@ -117,6 +122,12 @@ function(tet_add_library LibraryName)
         target_include_directories(${LibraryName} PUBLIC ${PARAM_PUBLIC_INCLUDES} PRIVATE ${PARAM_PRIVATE_LINKS})
         target_compile_definitions(${LibraryName} PUBLIC ${PARAM_PUBLIC_DEFINITIONS} PRIVATE ${PARAM_PRIVATE_DEFINITIONS})
     endif()
+
+    set_target_properties(${LibraryName} PROPERTIES CXX_CLANG_TIDY
+        clang-tidy;
+        -format-style='file';
+        -header-filter=^${CMAKE_CURRENT_SOURCE_DIR};
+    )
 
     # Copy ressources next to executable
     if(PARAM_RESSOURCES)
