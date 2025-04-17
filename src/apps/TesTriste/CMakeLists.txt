@@ -6,6 +6,7 @@ tet_add_executable(TesTriste
         $<INSTALL_INTERFACE:include/>
     LINKS
         glm::glm
+        Imgui
     DEFINITIONS
     RESSOURCES
 )
