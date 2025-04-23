@@ -1,9 +1,11 @@
+#include <TesTristeLib/Core/Logger.hpp>
+
 #include <glm/glm.hpp>
-#include <imgui_impl_glfw.h>
 #include <iostream>
 
 int main() {
     glm::vec2 vec{ 0.0, 5.0 };
-    std::cout << "Hello world!! Here is a vec: " << vec.x << "," << vec.y << "\n";
+    TesTriste::Logger::setLogLevel(TesTriste::Logger::LogLevel::Info);
+    TesTriste::Logger::logInfo("Program started! Here is a vec: ", vec.x, " , ", vec.y, "\n");
     return 0;
 }

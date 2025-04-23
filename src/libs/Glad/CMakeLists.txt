@@ -7,7 +7,7 @@ tet_add_library(${LibName}
         include/glad/glad.h
         include/KHR/khrplatform.h
     PUBLIC_INCLUDES
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/libs/glad/include>
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src/libs/Glad/include>
         $<INSTALL_INTERFACE:include/>
     PRIVATE_INCLUDES
     PUBLIC_LINKS

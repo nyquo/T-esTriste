@@ -37,8 +37,10 @@ DerivePointerAlignment: false
 IncludeCategories:
   - Regex:           '^".*"'
     Priority:        1
-  - Regex:           '^<.*>'
+  - Regex:           '^<(TesTristeLib|libs)/.*>'
     Priority:        2
+  - Regex:           '^<.*>'
+    Priority:        3
 IncludeBlocks: Regroup
 IndentCaseLabels: true
 IndentWidth: 4
