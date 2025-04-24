@@ -1,7 +1,7 @@
 ---
 Checks: >
   clang-diagnostic-*,clang-analyzer-*,bugprone-*,modernize-*,performance-*,readability-*,
-  -modernize-use-trailing-return-type
+  -modernize-use-trailing-return-type, -readability-uppercase-literal-suffix
 WarningsAsErrors: ''
 HeaderFileExtensions:
   - ''
@@ -204,8 +204,8 @@ CheckOptions:
   readability-function-size.VariableThreshold: none
   readability-identifier-length.IgnoredExceptionVariableNames: '^[e]$'
   readability-identifier-length.IgnoredLoopCounterNames: '^[ijk_]$'
-  readability-identifier-length.IgnoredParameterNames: '^[n]$'
-  readability-identifier-length.IgnoredVariableNames: ''
+  readability-identifier-length.IgnoredParameterNames: '^[nxyz]$'
+  readability-identifier-length.IgnoredVariableNames: 'x;y;z'
   readability-identifier-length.MinimumExceptionNameLength: '2'
   readability-identifier-length.MinimumLoopCounterNameLength: '2'
   readability-identifier-length.MinimumParameterNameLength: '3'

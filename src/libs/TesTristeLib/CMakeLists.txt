@@ -1,10 +1,18 @@
 set(HEADERS
+    Core/Application.hpp
     Core/gl.hpp
     Core/Logger.hpp
+    Core/Window.hpp
+    Events/Event.hpp
+    Events/KeyEvent.hpp
+    Events/MouseEvent.hpp
+    Events/WindowEvent.hpp
 )
 
 set(SOURCES
+    Core/Application.cpp
     Core/Logger.cpp
+    Core/Window.cpp
 )
 
 Tet_add_library(TesTristeLib
@@ -17,8 +25,8 @@ Tet_add_library(TesTristeLib
         $<INSTALL_INTERFACE:include/>
     PRIVATE_INCLUDES
     PUBLIC_LINKS
+        Glad # This shall probably be moved to private once it's not needed anymore
     PRIVATE_LINKS
-        Glad
         Imgui
     PUBLIC_DEFINITIONS
     PRIVATE_DEFINITIONS

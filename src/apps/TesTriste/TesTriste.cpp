@@ -1,11 +1,21 @@
+#include <TesTristeLib/Core/Application.hpp>
 #include <TesTristeLib/Core/Logger.hpp>
 
 #include <glm/glm.hpp>
 #include <iostream>
 
 int main() {
-    glm::vec2 vec{ 0.0, 5.0 };
+#ifndef NDEBUG
+    TesTriste::Logger::setLogLevel(TesTriste::Logger::LogLevel::Debug);
+#else
     TesTriste::Logger::setLogLevel(TesTriste::Logger::LogLevel::Info);
-    TesTriste::Logger::logInfo("Program started! Here is a vec: ", vec.x, " , ", vec.y, "\n");
+#endif
+
+    TesTriste::Logger::logInfo("Program started!");
+
+    TesTriste::Application app;
+
+    app.run();
+
     return 0;
 }
