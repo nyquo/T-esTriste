@@ -35,6 +35,8 @@ Window::Window(std::string name, Size size)
       glfwCreateWindow(static_cast<int>(m_width), static_cast<int>(m_height), m_name.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(m_window);
 
+    glfwSetWindowSizeLimits(m_window, s_minWidth, s_minHeight, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
     if(!s_gladInitialized) {
         if(!(bool)gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
             Logger::logError("Failed to initialize GLAD");

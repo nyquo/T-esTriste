@@ -30,6 +30,9 @@ class TET_API Window {
     GLFWwindow* getWindow() { return m_window; }
 
   private:
+    static constexpr unsigned int s_minWidth{ 400 };
+    static constexpr unsigned int s_minHeight{ 300 };
+
     static bool s_glfwInitialized;
     static bool s_gladInitialized;
     std::function<void(Event&)> m_eventCallBack;

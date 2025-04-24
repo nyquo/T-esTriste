@@ -21,11 +21,11 @@ class TET_API Application {
     virtual ~Application();
 
   public:
-    virtual void onEvent(Event& e);
+    virtual void onEvent(Event& event);
     void run();
 
   private: // Event callbacks
-    bool onWindowClose(WindowCloseEvent& e);
+    bool onWindowClose(WindowCloseEvent& event);
 
   private:
     std::unique_ptr<Window> m_mainWindow;

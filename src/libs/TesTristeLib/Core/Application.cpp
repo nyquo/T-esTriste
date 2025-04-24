@@ -3,17 +3,17 @@
 namespace TesTriste {
 
 Application::Application(std::string mainWindowName)
-  : m_mainWindow(std::make_unique<Window>("The app")) {
+  : m_mainWindow(std::make_unique<Window>(std::move(mainWindowName))) {
     m_mainWindow->setEventCallBack(BIND_EVENT_FN(Application::onEvent));
 }
 
 Application::~Application() { glfwTerminate(); }
 
-void Application::onEvent(Event& e) {
-    EventDispatcher dispatcher(e);
+void Application::onEvent(Event& event) {
+    EventDispatcher dispatcher(event);
     dispatcher.dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::onWindowClose));
 
-    m_mainWindow->onEvent(e);
+    m_mainWindow->onEvent(event);
 }
 
 void Application::run() {
@@ -22,7 +22,7 @@ void Application::run() {
     }
 }
 
-bool Application::onWindowClose(WindowCloseEvent& e) {
+bool Application::onWindowClose(WindowCloseEvent& event) {
     m_continueRunning = false;
     return false;
 }

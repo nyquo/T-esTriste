@@ -13,7 +13,7 @@ int main() {
 
     TesTriste::Logger::logInfo("Program started!");
 
-    TesTriste::Application app;
+    TesTriste::Application app("The app!");
 
     app.run();
 

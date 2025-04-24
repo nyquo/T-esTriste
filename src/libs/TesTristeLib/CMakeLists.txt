@@ -25,7 +25,7 @@ Tet_add_library(TesTristeLib
         $<INSTALL_INTERFACE:include/>
     PRIVATE_INCLUDES
     PUBLIC_LINKS
-        Glad # This shall probably be moved to private once it's not needed anymore
+        Glad
     PRIVATE_LINKS
         Imgui
     PUBLIC_DEFINITIONS
