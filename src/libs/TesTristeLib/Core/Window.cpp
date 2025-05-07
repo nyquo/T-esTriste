@@ -116,12 +116,24 @@ Window::Window(std::string name, Size size)
 Window::~Window() {}
 
 void Window::onUpdate() {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.1f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     glfwPollEvents();
     glfwSwapBuffers(m_window);
 }
-void Window::onEvent(Event& event) {}
+
+void Window::onEvent(Event& event) {
+    EventDispatcher dispatcher(event);
+    dispatcher.dispatch<TesTriste::WindowResizeEvent>(BIND_EVENT_FN(Window::onWindowResized));
+    m_layerStack.onEvent(event);
+}
+
 void Window::setEventCallBack(std::function<void(Event&)> callBack) { m_eventCallBack = std::move(callBack); }
+
+bool Window::onWindowResized(TesTriste::WindowResizeEvent& e) {
+    m_width = e.getWidth();
+    m_height = e.getHeight();
+    return false;
+}
 }

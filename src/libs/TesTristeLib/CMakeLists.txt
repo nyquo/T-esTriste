@@ -1,6 +1,8 @@
 set(HEADERS
     Core/Application.hpp
     Core/gl.hpp
+    Core/Layer.hpp
+    Core/LayerStack.hpp
     Core/Logger.hpp
     Core/Window.hpp
     Events/Event.hpp
@@ -11,6 +13,7 @@ set(HEADERS
 
 set(SOURCES
     Core/Application.cpp
+    Core/LayerStack.cpp
     Core/Logger.cpp
     Core/Window.cpp
 )
