@@ -2,7 +2,7 @@
 
 #include "Event.hpp"
 
-#include <TesTristeLib/TesTristeExport.hpp>
+#include <testristelib_export.h>
 
 #ifndef NDEBUG
 #include <sstream>
@@ -10,7 +10,7 @@
 
 namespace TesTriste {
 
-class TET_API WindowCloseEvent : public Event {
+class TET_EXPORT WindowCloseEvent : public Event {
   public:
     EVENT_CLASS_CATEGORY(EventCategoryWindowEvent)
     EVENT_CLASS_TYPE(WindowCloseEvent)
@@ -24,7 +24,7 @@ class TET_API WindowCloseEvent : public Event {
 #endif
 };
 
-class TET_API WindowResizeEvent : public Event {
+class TET_EXPORT WindowResizeEvent : public Event {
   public:
     WindowResizeEvent(unsigned int width, unsigned int height)
       : m_width(width)

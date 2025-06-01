@@ -2,7 +2,7 @@
 
 #include "Event.hpp"
 
-#include <TesTristeLib/TesTristeExport.hpp>
+#include <testristelib_export.h>
 
 #ifndef NDEBUG
 #include <sstream>
@@ -10,7 +10,7 @@
 
 namespace TesTriste {
 
-class TET_API KeyEvent : public Event {
+class TET_EXPORT KeyEvent : public Event {
   public:
     using KeyCode = unsigned int;
 
@@ -25,7 +25,7 @@ class TET_API KeyEvent : public Event {
     KeyCode m_keyCode;
 };
 
-class TET_API KeyPressedEvent : public KeyEvent {
+class TET_EXPORT KeyPressedEvent : public KeyEvent {
   public:
     KeyPressedEvent(const KeyCode keyCode, bool isRepeat = false)
       : KeyEvent(keyCode)
@@ -47,7 +47,7 @@ class TET_API KeyPressedEvent : public KeyEvent {
     bool m_isRepeat;
 };
 
-class TET_API KeyReleasedEvent : public KeyEvent {
+class TET_EXPORT KeyReleasedEvent : public KeyEvent {
   public:
     KeyReleasedEvent(KeyCode keyCode)
       : KeyEvent(keyCode) {}

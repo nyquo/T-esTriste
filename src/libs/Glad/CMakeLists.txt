@@ -1,6 +1,7 @@
 set(LibName Glad)
 
 tet_add_library(${LibName}
+    STATIC_LIB
     SOURCES
         src/glad.c
     HEADERS

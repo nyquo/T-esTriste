@@ -1,6 +1,6 @@
 #pragma once
 
-#include <TesTristeLib/TesTristeExport.hpp>
+#include <testristelib_export.h>
 
 #include <functional>
 #include <type_traits>
@@ -56,7 +56,7 @@ inline EventCategory operator|(EventCategory l, EventCategory r) {
                                       static_cast<std::underlying_type_t<EventCategory>>(r));
 }
 
-class TET_API Event {
+class TET_EXPORT Event {
   public:
     virtual ~Event() = default;
     [[nodiscard]] virtual EventType getEventType() const = 0;
@@ -77,7 +77,7 @@ class TET_API Event {
 inline std::ostream& operator<<(std::ostream& os, const Event& e) { return os << e.toString(); }
 #endif
 
-class TET_API EventDispatcher {
+class TET_EXPORT EventDispatcher {
   public:
     EventDispatcher(Event& event)
       : m_event(event) {}

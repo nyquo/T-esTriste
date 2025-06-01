@@ -2,14 +2,14 @@
 
 #include "TesTristeLib/Core/Layer.hpp"
 #include "TesTristeLib/Events/Event.hpp"
-#include "TesTristeLib/TesTristeExport.hpp"
+#include <testristelib_export.h>
 
 #include <memory>
 #include <vector>
 
 namespace TesTriste {
 
-class TET_API LayerStack {
+class TET_EXPORT LayerStack {
   public:
     LayerStack(Window* window = nullptr);
     LayerStack(const LayerStack& other) = delete;

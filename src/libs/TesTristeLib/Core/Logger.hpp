@@ -1,12 +1,13 @@
 #pragma once
 
-#include <TesTristeLib/TesTristeExport.hpp>
+#include <testristelib_export.h>
+
 #include <ctime>
 #include <iostream>
 
 namespace TesTriste {
 
-class TET_API Logger {
+class TET_EXPORT Logger {
   public:
     enum class LogLevel { Error, Warning, Info, Debug, Trace };
 

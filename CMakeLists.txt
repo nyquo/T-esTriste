@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.26)
 project(TesTriste LANGUAGES C CXX VERSION 0.1)
 
 include(FetchContent)
+include(GenerateExportHeader)
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/helper.cmake")
 
 set(default_build_type "RelWithDebInfo")
@@ -13,6 +14,9 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
    # Set the possible values of build type for cmake-gui
    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS  "Debug" "Release")
 endif()
+
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

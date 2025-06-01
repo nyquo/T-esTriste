@@ -21,6 +21,7 @@ set(SOURCES
 )
 
 Tet_add_library(Imgui
+    STATIC_LIB
     SOURCES
         ${SOURCES}
     HEADERS

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "TesTristeLib/Events/Event.hpp"
-#include "TesTristeLib/TesTristeExport.hpp"
+#include <testristelib_export.h>
 
 namespace TesTriste {
 
 class Window;
 
-class TET_API Layer {
+class TET_EXPORT Layer {
   public:
     Layer() = default;
     Layer(const Layer& other) = delete;
