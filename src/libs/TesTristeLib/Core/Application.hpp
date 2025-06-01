@@ -3,7 +3,7 @@
 #include <TesTristeLib/Core/Window.hpp>
 #include <TesTristeLib/Events/Event.hpp>
 #include <TesTristeLib/Events/WindowEvent.hpp>
-#include <TesTristeLib/TesTristeExport.hpp>
+#include <testristelib_export.h>
 
 #include <atomic>
 #include <memory>
@@ -11,7 +11,7 @@
 
 namespace TesTriste {
 
-class TET_API Application {
+class TET_EXPORT Application {
   public:
     Application(std::string mainWindowName = "HelloWord");
     Application(const Application& other) = delete;

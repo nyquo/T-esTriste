@@ -2,7 +2,7 @@
 
 #include "Event.hpp"
 
-#include <TesTristeLib/TesTristeExport.hpp>
+#include <testristelib_export.h>
 
 #ifndef NDEBUG
 #include <sstream>
@@ -10,7 +10,7 @@
 
 namespace TesTriste {
 
-class TET_API MouseMovedEvent : public Event {
+class TET_EXPORT MouseMovedEvent : public Event {
   public:
     MouseMovedEvent(double x, double y)
       : m_posX(x)
@@ -34,7 +34,7 @@ class TET_API MouseMovedEvent : public Event {
     double m_posX, m_posY;
 };
 
-class TET_API MouseScrolledEvent : public Event {
+class TET_EXPORT MouseScrolledEvent : public Event {
   public:
     MouseScrolledEvent(double xOffset, double yOffset)
       : m_xOffset(xOffset)
@@ -58,7 +58,7 @@ class TET_API MouseScrolledEvent : public Event {
     double m_xOffset, m_yOffset;
 };
 
-class TET_API MouseButtonEvent : public Event {
+class TET_EXPORT MouseButtonEvent : public Event {
   public:
     using ButtonCode = int;
 
@@ -73,7 +73,7 @@ class TET_API MouseButtonEvent : public Event {
     ButtonCode m_buttonCode;
 };
 
-class TET_API MouseButtonPressedEvent : public MouseButtonEvent {
+class TET_EXPORT MouseButtonPressedEvent : public MouseButtonEvent {
   public:
     MouseButtonPressedEvent(const ButtonCode buttonCode)
       : MouseButtonEvent(buttonCode) {}
@@ -89,7 +89,7 @@ class TET_API MouseButtonPressedEvent : public MouseButtonEvent {
 #endif
 };
 
-class TET_API MouseButtonReleasedEvent : public MouseButtonEvent {
+class TET_EXPORT MouseButtonReleasedEvent : public MouseButtonEvent {
   public:
     MouseButtonReleasedEvent(const ButtonCode buttonCode)
       : MouseButtonEvent(buttonCode) {}

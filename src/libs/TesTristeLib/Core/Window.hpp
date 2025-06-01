@@ -2,7 +2,7 @@
 
 #include <TesTristeLib/Core/gl.hpp>
 #include <TesTristeLib/Events/Event.hpp>
-#include <TesTristeLib/TesTristeExport.hpp>
+#include <testristelib_export.h>
 
 #include <string>
 
@@ -13,7 +13,7 @@ struct Size {
     unsigned int height;
 };
 
-class TET_API Window {
+class TET_EXPORT Window {
   public:
     Window(std::string name = "New Window", Size size = Size{ .width = 800, .height = 800 });
     Window(const Window& other) = delete;
