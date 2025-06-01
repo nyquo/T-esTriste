@@ -77,6 +77,7 @@ endfunction()
 #
 # Usage:
 #   tet_add_executable(LibraryName
+#       STATIC_LIB
 #       SOURCES [item1...]
 #       HEADERS [item1...]
 #       [PUBLIC_INCLUDES [item1...]]
@@ -87,6 +88,7 @@ endfunction()
 #       [PRIVATE_DEFINITIONS [item1...]]
 #       [RESSOURCES [item1 ...]])
 #
+# STATIC_LIB option to build the lib staticaly
 # SOURCES are the sources of the library
 # HEADERS are the headers files associated to the library
 # PUBLIC_INCLUDES an optional list of include directories that are public dependencies
@@ -98,11 +100,17 @@ endfunction()
 # RESSOURCES an optinal list of ressources to copy next to the executable
 #
 function(tet_add_library LibraryName)
-    set(_options "")
-    set(_singleValues)
+    set(_options STATIC_LIB)
+    set(_singleValues EXPORT_MACRO_PREFIX)
     set(_multipleValues SOURCES HEADERS PUBLIC_INCLUDES PRIVATE_INCLUDES PUBLIC_LINKS PRIVATE_LINKS PUBLIC_DEFINITIONS PRIVATE_DEFINITIONS RESSOURCES)
 
     cmake_parse_arguments(PARAM "${_options}" "${_singleValues}" "${_multipleValues}" ${ARGN})
+    
+    if(PARAM_STATIC_LIB OR NOT BUILD_SHARED_LIBS)
+        set(LIB_TYPE STATIC)
+    else()
+        set(LIB_TYPE SHARED)
+    endif()
 
     if(NOT LibraryName)
         message(FATAL_ERROR "You must provide the library name in 'tet_add_library'")
@@ -117,7 +125,7 @@ function(tet_add_library LibraryName)
         target_link_libraries(${LibraryName} INTERFACE ${PARAM_PUBLIC_LINKS} ${PARAM_PRIVATE_LINKS})
         target_include_directories(${LibraryName} INTERFACE ${PARAM_PUBLIC_INCLUDES} ${PARAM_PRIVATE_INCLUDES})
     else()
-        add_library(${LibraryName} ${PARAM_SOURCES} ${PARAM_HEADERS} ${PARAM_RESSOURCES})
+        add_library(${LibraryName} ${LIB_TYPE} ${PARAM_SOURCES} ${PARAM_HEADERS} ${PARAM_RESSOURCES})
         target_link_libraries(${LibraryName} PUBLIC ${PARAM_PUBLIC_LINKS} PRIVATE ${PARAM_PRIVATE_LINKS})
         target_include_directories(${LibraryName} PUBLIC ${PARAM_PUBLIC_INCLUDES} PRIVATE ${PARAM_PRIVATE_INCLUDES})
         target_compile_definitions(${LibraryName} PUBLIC ${PARAM_PUBLIC_DEFINITIONS} PRIVATE ${PARAM_PRIVATE_DEFINITIONS})
@@ -128,6 +136,27 @@ function(tet_add_library LibraryName)
         -format-style='file';
         -header-filter=^${CMAKE_CURRENT_SOURCE_DIR};
     )
+
+    if(PARAM_EXPORT_MACRO_PREFIX)
+        generate_export_header(${LibraryName}
+            EXPORT_MACRO_NAME "${PARAM_EXPORT_MACRO_PREFIX}_EXPORT"
+            DEPRECATED_MACRO_NAME "${PARAM_EXPORT_MACRO_PREFIX}_DEPRECATED"
+            # TODO ADD OTHER MACROS
+            )
+    else()
+        generate_export_header(${LibraryName})
+    endif()
+
+    #TODO manage install
+    #install(FILES
+    #    ${CMAKE_CURRENT_BINARY_DIR}/somelib_export.h
+    #    DESTINATION ${INCLUDE_INSTALL_DIR}
+    #)
+
+    target_include_directories(${LibraryName} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    )
+    # TODO manage BUILD_INTERFACE and INSTALL INTERFACE here instead of in the caller
 
     # Copy ressources next to executable
     if(PARAM_RESSOURCES)
