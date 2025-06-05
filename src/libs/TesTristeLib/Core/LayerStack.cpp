@@ -5,6 +5,7 @@
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
+#include <ranges>
 #include <stdexcept>
 
 namespace TesTriste {
@@ -85,12 +86,12 @@ void LayerStack::onUpdate() {
     }
 }
 
-void LayerStack::onEvent(Event& e) {
-    for(auto layer = m_uiLayers.rbegin(); layer != m_uiLayers.rend(); ++layer) {
-        (*layer)->onEvent(e);
+void LayerStack::onEvent(Event& event) {
+    for(auto& layer : std::ranges::reverse_view(m_uiLayers)) {
+        layer->onEvent(event);
     }
-    for(auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
-        (*layer)->onEvent(e);
+    for(auto& layer : std::ranges::reverse_view(m_layers)) {
+        layer->onEvent(event);
     }
 }
 

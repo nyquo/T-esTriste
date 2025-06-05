@@ -2,9 +2,9 @@
 
 #include "TesTristeLib/Core/Layer.hpp"
 #include "TesTristeLib/Events/Event.hpp"
-#include <testristelib_export.h>
 
 #include <memory>
+#include <testristelib_export.h>
 #include <vector>
 
 namespace TesTriste {
@@ -24,7 +24,7 @@ class TET_EXPORT LayerStack {
     void removeOverlayLayer(const std::shared_ptr<Layer>& layer);
 
     void onUpdate();
-    void onEvent(Event& e);
+    void onEvent(Event& event);
 
   private:
     std::vector<std::shared_ptr<Layer>> m_layers;
