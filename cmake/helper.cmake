@@ -131,6 +131,10 @@ function(tet_add_library LibraryName)
         target_compile_definitions(${LibraryName} PUBLIC ${PARAM_PUBLIC_DEFINITIONS} PRIVATE ${PARAM_PRIVATE_DEFINITIONS})
     endif()
 
+    if(${LIB_TYPE} STREQUAL "STATIC")
+        target_compile_options(${LibraryName} PRIVATE -fPIC)
+    endif()
+
     set_target_properties(${LibraryName} PROPERTIES CXX_CLANG_TIDY
         clang-tidy;
         -format-style='file';
