@@ -9,6 +9,12 @@ set(HEADERS
     Events/KeyEvent.hpp
     Events/MouseEvent.hpp
     Events/WindowEvent.hpp
+    Io/stb_image.h
+    TesTriste/TesTristeApp.hpp
+    TesTriste/MainLayer.hpp
+    Renderer/Buffers.hpp
+    Renderer/Camera.hpp
+    Renderer/PerspectiveCamera.hpp
 )
 
 set(SOURCES
@@ -16,6 +22,11 @@ set(SOURCES
     Core/LayerStack.cpp
     Core/Logger.cpp
     Core/Window.cpp
+    Io/stb_image.cpp
+    TesTriste/TesTristeApp.cpp
+    TesTriste/MainLayer.cpp
+    Renderer/Buffers.cpp
+    Renderer/PerspectiveCamera.cpp
 )
 
 Tet_add_library(TesTristeLib
@@ -28,9 +39,10 @@ Tet_add_library(TesTristeLib
         $<INSTALL_INTERFACE:include/>
     PRIVATE_INCLUDES
     PUBLIC_LINKS
+        glm::glm
+        Imgui
         Glad
     PRIVATE_LINKS
-        Imgui
     PUBLIC_DEFINITIONS
     PRIVATE_DEFINITIONS
     RESSOURCES

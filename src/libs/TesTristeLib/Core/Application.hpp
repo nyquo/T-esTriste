@@ -3,11 +3,11 @@
 #include <TesTristeLib/Core/Window.hpp>
 #include <TesTristeLib/Events/Event.hpp>
 #include <TesTristeLib/Events/WindowEvent.hpp>
-#include <testristelib_export.h>
 
 #include <atomic>
 #include <memory>
 #include <string>
+#include <testristelib_export.h>
 
 namespace TesTriste {
 
@@ -23,6 +23,10 @@ class TET_EXPORT Application {
   public:
     virtual void onEvent(Event& event);
     void run();
+
+  protected:
+    [[nodiscard]] Window& getWindow() { return *m_mainWindow; }
+    [[nodiscard]] const Window& getWindow() const { return *m_mainWindow; }
 
   private: // Event callbacks
     bool onWindowClose(WindowCloseEvent& event);

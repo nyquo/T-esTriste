@@ -4,9 +4,9 @@
 #include "TesTristeLib/Core/gl.hpp"
 #include "TesTristeLib/Events/Event.hpp"
 #include "TesTristeLib/Events/WindowEvent.hpp"
-#include <testristelib_export.h>
 
 #include <string>
+#include <testristelib_export.h>
 
 namespace TesTriste {
 
@@ -32,6 +32,11 @@ class TET_EXPORT Window {
     unsigned int getWidth() const { return m_width; }
     unsigned int getHeight() const { return m_height; }
     GLFWwindow* getWindow() { return m_window; }
+
+    void pushLayer(std::shared_ptr<Layer> layer);
+    void pushOverlayLayer(std::shared_ptr<Layer> layer);
+    void removeLayer(std::shared_ptr<Layer> layer);
+    void removeOverlayLayer(std::shared_ptr<Layer> layer);
 
   private:
     bool onWindowResized(TesTriste::WindowResizeEvent& e);
