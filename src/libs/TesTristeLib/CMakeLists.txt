@@ -15,6 +15,7 @@ set(HEADERS
     Renderer/Buffers.hpp
     Renderer/Camera.hpp
     Renderer/PerspectiveCamera.hpp
+    Renderer/Shader.hpp
 )
 
 set(SOURCES
@@ -27,6 +28,12 @@ set(SOURCES
     TesTriste/MainLayer.cpp
     Renderer/Buffers.cpp
     Renderer/PerspectiveCamera.cpp
+    Renderer/Shader.cpp
+)
+
+set(RESSOURCES
+    TesTriste/shaders/BasicShader.frag
+    TesTriste/shaders/BasicShader.vert
 )
 
 Tet_add_library(TesTristeLib
@@ -46,5 +53,6 @@ Tet_add_library(TesTristeLib
     PUBLIC_DEFINITIONS
     PRIVATE_DEFINITIONS
     RESSOURCES
+        ${RESSOURCES}
     EXPORT_MACRO_PREFIX TET
 )

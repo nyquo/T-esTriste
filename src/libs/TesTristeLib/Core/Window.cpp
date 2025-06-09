@@ -139,7 +139,7 @@ Window::~Window() {
 
 void Window::onUpdate() {
     glClearColor(0.0f, 0.1f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glfwPollEvents();
     m_layerStack.onUpdate();
@@ -162,6 +162,7 @@ void Window::removeOverlayLayer(std::shared_ptr<Layer> layer) { m_layerStack.rem
 bool Window::onWindowResized(TesTriste::WindowResizeEvent& e) {
     m_width = e.getWidth();
     m_height = e.getHeight();
+    glViewport(0, 0, m_width, m_height);
     return false;
 }
 }

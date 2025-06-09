@@ -131,7 +131,7 @@ function(tet_add_library LibraryName)
         target_compile_definitions(${LibraryName} PUBLIC ${PARAM_PUBLIC_DEFINITIONS} PRIVATE ${PARAM_PRIVATE_DEFINITIONS})
     endif()
 
-    if(${LIB_TYPE} STREQUAL "STATIC")
+    if(${LIB_TYPE} STREQUAL "STATIC" AND UNIX)
         target_compile_options(${LibraryName} PRIVATE -fPIC)
     endif()
 
