@@ -123,7 +123,7 @@ Shader::~Shader() { glDeleteProgram(m_programId); }
 
 void Shader::bind() const { glUseProgram(m_programId); }
 
-void Shader::unbind() const { glUseProgram(0); }
+void Shader::unbind() { glUseProgram(0); }
 
 void Shader::setInt(const std::string& name, int value) const {
     glUniform1i(glGetUniformLocation(m_programId, name.c_str()), value);

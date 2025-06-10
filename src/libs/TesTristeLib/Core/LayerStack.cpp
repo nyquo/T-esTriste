@@ -87,11 +87,11 @@ void LayerStack::onUpdate() {
 }
 
 void LayerStack::onEvent(Event& event) {
-    for(auto layer = m_uiLayers.rbegin(); layer != m_uiLayers.rend(); ++layer) {
-        (*layer)->onEvent(event);
+    for(auto& layer : std::ranges::reverse_view(m_uiLayers)) {
+        layer->onEvent(event);
     }
-    for(auto layer = m_layers.rbegin(); layer != m_layers.rend(); ++layer) {
-        (*layer)->onEvent(event);
+    for(auto& layer : std::ranges::reverse_view(m_layers)) {
+        layer->onEvent(event);
     }
 }
 

@@ -20,7 +20,7 @@ class TET_EXPORT Shader {
 
   public:
     void bind() const;
-    void unbind() const;
+    static void unbind();
 
     [[nodiscard]] uint32_t getUid() const { return m_programId; }
 
@@ -31,7 +31,7 @@ class TET_EXPORT Shader {
     void setVec3(const std::string& name, float x, float y, float z) const;
 
   private:
-    std::string parseFile(const std::filesystem::path& filePath);
+    static std::string parseFile(const std::filesystem::path& filePath);
 
   private:
     uint32_t m_programId;
