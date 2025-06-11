@@ -8,15 +8,20 @@ ECS::ECS() {
     }
 }
 
+ECS::~ECS() {
+    for(auto& [id, pool] : m_componentPools) {
+        delete pool; // Clean up component pools
+    }
+}
+
 Entity ECS::createEntity() {
     if(m_availableEntities.empty()) {
         Logger::logError("No more entities available!");
-        return MAX_ENTITIES; // Return an invalid entity
-    } else {
-        Entity entity = m_availableEntities.front();
-        m_availableEntities.pop();
-        return entity;
+        return NULL_ENTITY;
     }
+    Entity entity = m_availableEntities.front();
+    m_availableEntities.pop();
+    return entity;
 }
 
 void ECS::destroyEntity(Entity entity) {
@@ -27,8 +32,6 @@ void ECS::destroyEntity(Entity entity) {
     m_signatures[entity].reset();
     m_availableEntities.push(entity);
     Logger::logDebug("Entity destroyed: ", entity);
-
-    // TODO clear components associated with the entity
 }
 
 size_t ECS::getEntityCount() const noexcept { return MAX_COMPONENTS - m_availableEntities.size(); }

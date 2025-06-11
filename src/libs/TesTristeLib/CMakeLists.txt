@@ -1,6 +1,5 @@
 set(HEADERS
     Core/Application.hpp
-    Core/Ecs.hpp
     Core/gl.hpp
     Core/Layer.hpp
     Core/LayerStack.hpp
@@ -21,7 +20,6 @@ set(HEADERS
 
 set(SOURCES
     Core/Application.cpp
-    Core/Ecs.cpp
     Core/LayerStack.cpp
     Core/Logger.cpp
     Core/Window.cpp
@@ -51,6 +49,7 @@ Tet_add_library(TesTristeLib
         glm::glm
         Imgui
         Glad
+        EnTT::EnTT
     PRIVATE_LINKS
     PUBLIC_DEFINITIONS
     PRIVATE_DEFINITIONS
