@@ -20,6 +20,9 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
     void onUpdate() override;
     void onImGuiRender() override;
 
+  private:
+    void showFps();
+
     // TEMP
   private:
     std::vector<float> m_triangleVertices{ -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };

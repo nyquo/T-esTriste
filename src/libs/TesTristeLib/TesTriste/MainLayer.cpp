@@ -34,11 +34,19 @@ void MainLayer::onUpdate() {
     glDrawElements(GL_TRIANGLES, m_triangleIndexs.size(), GL_UNSIGNED_INT, 0);
 }
 
-void MainLayer::onImGuiRender() {
+void MainLayer::onImGuiRender() { showFps(); }
+
+void MainLayer::showFps() {
     const float fps = ImGui::GetIO().Framerate;
-    ImGui::Begin("FPS");
+    ImGui::SetNextWindowPos(ImVec2(10, 10));
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    ImGui::SetNextWindowBgAlpha(0.5f);
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                                   ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
+                                   ImGuiWindowFlags_NoFocusOnAppearing;
+    ImGui::Begin("FPS", nullptr, windowFlags);
     ImGui::Text("FPS: %.1f", fps);
     ImGui::End();
+    ImGui::PopStyleVar();
 }
-
 }
