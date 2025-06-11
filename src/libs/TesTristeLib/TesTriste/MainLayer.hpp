@@ -2,6 +2,7 @@
 #include <TesTristeLib/Renderer/Buffers.hpp>
 #include <TesTristeLib/Renderer/Shader.hpp>
 
+#include <entt/entt.hpp>
 #include <filesystem>
 #include <testristelib_export.h>
 
@@ -32,6 +33,8 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
     VertexArray m_vertexArray;
 
     std::unique_ptr<Shader> m_shader;
+
+    entt::registry m_registry;
 
     static constexpr char sep = std::filesystem::path::preferred_separator;
 };
