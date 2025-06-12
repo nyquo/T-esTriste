@@ -14,8 +14,10 @@ set(HEADERS
     TesTriste/MainLayer.hpp
     Renderer/Buffers.hpp
     Renderer/Camera.hpp
+    Renderer/Mesh.hpp
     Renderer/PerspectiveCamera.hpp
     Renderer/Shader.hpp
+    Renderer/Vertex.hpp
 )
 
 set(SOURCES
@@ -27,6 +29,7 @@ set(SOURCES
     TesTriste/TesTristeApp.cpp
     TesTriste/MainLayer.cpp
     Renderer/Buffers.cpp
+    Renderer/Mesh.cpp
     Renderer/PerspectiveCamera.cpp
     Renderer/Shader.cpp
 )
