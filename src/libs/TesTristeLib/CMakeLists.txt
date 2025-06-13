@@ -12,6 +12,7 @@ set(HEADERS
     Io/stb_image.h
     TesTriste/TesTristeApp.hpp
     TesTriste/MainLayer.hpp
+    TesTriste/Shapes/Cube.hpp
     Renderer/Buffers.hpp
     Renderer/Camera.hpp
     Renderer/Mesh.hpp
@@ -28,6 +29,7 @@ set(SOURCES
     Io/stb_image.cpp
     TesTriste/TesTristeApp.cpp
     TesTriste/MainLayer.cpp
+    TesTriste/Shapes/Cube.cpp
     Renderer/Buffers.cpp
     Renderer/Mesh.cpp
     Renderer/PerspectiveCamera.cpp
@@ -35,8 +37,8 @@ set(SOURCES
 )
 
 set(RESSOURCES
-    TesTriste/shaders/BasicShader.frag
-    TesTriste/shaders/BasicShader.vert
+    TesTriste/Shaders/BasicShader.frag
+    TesTriste/Shaders/BasicShader.vert
 )
 
 Tet_add_library(TesTristeLib

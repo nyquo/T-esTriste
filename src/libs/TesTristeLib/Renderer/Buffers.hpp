@@ -45,6 +45,7 @@ class TET_EXPORT VertexBuffer {
 
     void bind() const;
     void unbind() const;
+    void setData(size_t size, void* data);
 
     const BufferLayout& getLayout() const { return m_layout; }
     void setLayout(BufferLayout&& layout);
@@ -65,6 +66,7 @@ class TET_EXPORT IndexBuffer {
 
     void bind() const;
     void unbind() const;
+    void setData(size_t count, unsigned int* indices);
 
     size_t getCount() const { return m_count; }
 

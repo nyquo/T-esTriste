@@ -8,21 +8,12 @@
 
 namespace TesTriste {
 
-MainLayer::MainLayer()
-  : m_vertexBuffer(m_triangleVertices.size() * sizeof(float), m_triangleVertices.data())
-  , m_indexBuffer(m_triangleIndexs.size() * sizeof(unsigned int), m_triangleIndexs.data()) {
-    BufferLayout layout{ BufferElement(GL_FLOAT, 3, GL_FALSE, sizeof(float)) };
-    m_vertexBuffer.setLayout(std::move(layout));
-    m_vertexArray.addVertexBuffer(m_vertexBuffer);
-    m_vertexArray.setIndexBuffer(m_indexBuffer);
-
-    glBindVertexArray(0);
-
+MainLayer::MainLayer() {
     glDisable(GL_CULL_FACE);
 
     m_shader = std::make_unique<Shader>(
-      std::string(RESSOURCES_FOLDER) + sep + "TesTriste" + sep + "shaders" + sep + "BasicShader.vert",
-      std::string(RESSOURCES_FOLDER) + sep + "TesTriste" + sep + "shaders" + sep + "BasicShader.frag");
+      std::string(RESSOURCES_FOLDER) + sep + "TesTriste" + sep + "Shaders" + sep + "BasicShader.vert",
+      std::string(RESSOURCES_FOLDER) + sep + "TesTriste" + sep + "Shaders" + sep + "BasicShader.frag");
 }
 
 void MainLayer::onEvent(TesTriste::Event& event) {}
@@ -30,8 +21,8 @@ void MainLayer::onEvent(TesTriste::Event& event) {}
 void MainLayer::onUpdate() {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     m_shader->bind();
-    m_vertexArray.bind();
-    glDrawElements(GL_TRIANGLES, m_triangleIndexs.size(), GL_UNSIGNED_INT, 0);
+    m_cube.bind();
+    glDrawElements(GL_TRIANGLES, m_cube.getIndicesCount(), GL_UNSIGNED_INT, 0);
 }
 
 void MainLayer::onImGuiRender() { showFps(); }

@@ -1,6 +1,7 @@
 #include <TesTristeLib/Core/Layer.hpp>
 #include <TesTristeLib/Renderer/Buffers.hpp>
 #include <TesTristeLib/Renderer/Shader.hpp>
+#include <TesTristeLib/TesTriste/Shapes/Cube.hpp>
 
 #include <entt/entt.hpp>
 #include <filesystem>
@@ -26,11 +27,7 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
 
     // TEMP
   private:
-    std::vector<float> m_triangleVertices{ -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
-    std::vector<unsigned int> m_triangleIndexs{ 0, 2, 1 };
-    VertexBuffer m_vertexBuffer;
-    IndexBuffer m_indexBuffer;
-    VertexArray m_vertexArray;
+    Cube m_cube{ 1.0F };
 
     std::unique_ptr<Shader> m_shader;
 
