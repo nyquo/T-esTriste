@@ -45,11 +45,6 @@ void VertexBuffer::bind() const { glBindBuffer(GL_ARRAY_BUFFER, m_id); }
 
 void VertexBuffer::unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
 
-void VertexBuffer::setData(size_t size, void* data) {
-    bind();
-    glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
-}
-
 void VertexBuffer::setLayout(BufferLayout&& layout) { m_layout = std::move(layout); }
 
 IndexBuffer::IndexBuffer(size_t count, unsigned int* indices)
@@ -84,12 +79,6 @@ IndexBuffer::~IndexBuffer() {
 void IndexBuffer::bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id); }
 
 void IndexBuffer::unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
-
-void IndexBuffer::setData(size_t count, unsigned int* indices) {
-    bind();
-    m_count = count;
-    glBufferData(GL_ARRAY_BUFFER, count * sizeof(unsigned int), indices, GL_STATIC_DRAW);
-}
 
 VertexArray::VertexArray() { glGenVertexArrays(1, &m_id); }
 

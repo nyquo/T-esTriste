@@ -3,6 +3,7 @@
 #include <TesTristeLib/Renderer/Buffers.hpp>
 #include <TesTristeLib/Renderer/Vertex.hpp>
 
+#include <memory>
 #include <testristelib_export.h>
 #include <vector>
 
@@ -12,7 +13,7 @@ namespace TesTriste {
 
 class TET_EXPORT Mesh {
   public:
-    Mesh();
+    Mesh() = default;
     // TODO mabe take directly the data here instead of vectors?
     Mesh(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices);
     Mesh(const Mesh& other) = delete;
@@ -22,18 +23,20 @@ class TET_EXPORT Mesh {
     ~Mesh();
 
     size_t getIndicesCount() const { return m_indicesCount; }
-    void upload(std::vector<Vertex>& vertices, BufferLayout layout, std::vector<unsigned int>& indices);
-    void bind() const { m_vertexArray.bind(); }
+    void bind() const;
+
+  protected:
+    void reInit(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices);
 
   private:
     std::vector<Vertex> m_vertices;
     std::vector<unsigned int> m_indices;
 
-    VertexArray m_vertexArray;
-    VertexBuffer m_vertexBuffer;
-    IndexBuffer m_indexBuffer;
+    std::unique_ptr<VertexArray> m_vertexArray;
+    std::unique_ptr<VertexBuffer> m_vertexBuffer;
+    std::unique_ptr<IndexBuffer> m_indexBuffer;
 
-    size_t m_indicesCount;
+    size_t m_indicesCount{ 0 };
 };
 
 }
