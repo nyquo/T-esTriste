@@ -6,66 +6,37 @@ Cube::Cube(float size) {
     std::vector<Vertex> vertices;
     vertices.reserve(8);
 
-    // TODO fix normals
-
-    // Front face CCW
-    vertices.emplace_back(glm::vec3(0, 0, 0), glm::vec3(-1.0F, -1.0F, -1.0F), glm::vec2(0.0F, 0.0F));
-    vertices.emplace_back(glm::vec3(size, 0, 0), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
-    vertices.emplace_back(glm::vec3(size, size, 0), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
-    vertices.emplace_back(glm::vec3(0, size, 0), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
-    // Back face CW
-    vertices.emplace_back(glm::vec3(0, 0, size), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
-    vertices.emplace_back(glm::vec3(size, 0, size), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
-    vertices.emplace_back(glm::vec3(size, size, size), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
-    vertices.emplace_back(glm::vec3(0, size, size), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
+    // TODO Fix normals and texture coordinates
+    for(float z = -size / 2; z <= size / 2; z += size) {
+        for(float y = -size / 2; y <= size / 2; y += size) {
+            for(float x = -size / 2; x <= size / 2; x += size) {
+                vertices.emplace_back(glm::vec3(x, y, z), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
+            }
+        }
+    }
 
     std::vector<unsigned int> indices;
-    indices.reserve(36);
 
-    // All in CW order
+    // Each face is defined by 4 vertices BL, BR, TL, TR
+    const std::vector<std::vector<unsigned int>> faces = {
+        { 0, 1, 2, 3 }, // Front face
+        { 4, 5, 6, 7 }, // Back face
+        { 4, 0, 6, 2 }, // Left face
+        { 1, 5, 3, 7 }, // Right face
+        { 2, 3, 6, 7 }, // Top face
+        { 4, 5, 0, 1 }  // Bottom face
+    };
 
-    // Front face
-    indices.push_back(0);
-    indices.push_back(2);
-    indices.push_back(1);
-    indices.push_back(0);
-    indices.push_back(3);
-    indices.push_back(2);
-    // Back face
-    indices.push_back(4);
-    indices.push_back(5);
-    indices.push_back(6);
-    indices.push_back(4);
-    indices.push_back(6);
-    indices.push_back(7);
-    // Left face
-    indices.push_back(0);
-    indices.push_back(7);
-    indices.push_back(3);
-    indices.push_back(0);
-    indices.push_back(4);
-    indices.push_back(7);
-    // Right face
-    indices.push_back(1);
-    indices.push_back(2);
-    indices.push_back(6);
-    indices.push_back(1);
-    indices.push_back(6);
-    indices.push_back(5);
-    // Top face
-    indices.push_back(3);
-    indices.push_back(7);
-    indices.push_back(6);
-    indices.push_back(3);
-    indices.push_back(6);
-    indices.push_back(2);
-    // Bottom face
-    indices.push_back(0);
-    indices.push_back(1);
-    indices.push_back(4);
-    indices.push_back(1);
-    indices.push_back(5);
-    indices.push_back(4);
+    // Insert triangle in clockwise order for each face
+    indices.reserve(faces.size() * 6);
+    for(auto face : faces) {
+        indices.push_back(face[0]);
+        indices.push_back(face[2]);
+        indices.push_back(face[1]);
+        indices.push_back(face[2]);
+        indices.push_back(face[3]);
+        indices.push_back(face[1]);
+    }
 
     Mesh::reInit(std::move(vertices), std::move(indices));
 }
