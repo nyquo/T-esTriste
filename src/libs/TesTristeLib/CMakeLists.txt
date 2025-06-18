@@ -23,6 +23,7 @@ set(HEADERS
 
 set(SOURCES
     Core/Application.cpp
+    Core/Layer.cpp
     Core/LayerStack.cpp
     Core/Logger.cpp
     Core/Window.cpp

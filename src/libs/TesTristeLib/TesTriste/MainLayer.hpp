@@ -1,5 +1,6 @@
 #include <TesTristeLib/Core/Layer.hpp>
 #include <TesTristeLib/Renderer/Buffers.hpp>
+#include <TesTristeLib/Renderer/PerspectiveCamera.hpp>
 #include <TesTristeLib/Renderer/Shader.hpp>
 #include <TesTristeLib/TesTriste/Shapes/Cube.hpp>
 
@@ -11,7 +12,7 @@ namespace TesTriste {
 
 class TET_EXPORT MainLayer : public TesTriste::Layer {
   public:
-    MainLayer();
+    MainLayer(float width = 800.0F, float height = 800.0F);
     MainLayer(const MainLayer& other) = delete;
     MainLayer(MainLayer&& other) = delete;
     MainLayer operator=(const MainLayer& other) = delete;
@@ -27,9 +28,13 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
 
     // TEMP
   private:
-    Cube m_cube{ 1.0F };
+    Cube m_cube{ 10.0F };
+    std::shared_ptr<PerspectiveCamera> m_camera;
 
     std::unique_ptr<Shader> m_shader;
+    glm::vec3 m_meshColor{ 0.0f, 1.0f, 0.0f };
+    glm::vec3 m_meshPosition{ 0.0f, 0.0f, 0.0f };
+    glm::vec3 m_meshAngle{ 0.0f, 0.0f, 0.0f };
 
     entt::registry m_registry;
 
