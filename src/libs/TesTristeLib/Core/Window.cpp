@@ -5,6 +5,10 @@
 #include <TesTristeLib/Events/MouseEvent.hpp>
 #include <TesTristeLib/Events/WindowEvent.hpp>
 
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
 namespace TesTriste {
 
 bool Window::s_glfwInitialized = false;
@@ -112,16 +116,53 @@ Window::Window(std::string name, Size size)
     });
 
     // NOLINTEND(bugprone-easily-swappable-parameters)
+
+    IMGUI_CHECKVERSION();
+
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    io.ConfigWindowsMoveFromTitleBarOnly = true;
+    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(m_window, true);
+    ImGui_ImplOpenGL3_Init("#version 330 core");
 }
-Window::~Window() {}
+Window::~Window() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+}
 
 void Window::onUpdate() {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(0.0f, 0.1f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glfwPollEvents();
+    m_layerStack.onUpdate();
     glfwSwapBuffers(m_window);
 }
-void Window::onEvent(Event& event) {}
+
+void Window::onEvent(Event& event) {
+    EventDispatcher dispatcher(event);
+    dispatcher.dispatch<TesTriste::WindowResizeEvent>(BIND_EVENT_FN(Window::onWindowResized));
+    m_layerStack.onEvent(event);
+}
+
 void Window::setEventCallBack(std::function<void(Event&)> callBack) { m_eventCallBack = std::move(callBack); }
+
+void Window::pushLayer(std::shared_ptr<Layer> layer) { m_layerStack.pushLayer(layer); }
+void Window::pushOverlayLayer(std::shared_ptr<Layer> layer) { m_layerStack.pushOverlayLayer(layer); }
+void Window::removeLayer(std::shared_ptr<Layer> layer) { m_layerStack.removeLayer(layer); }
+void Window::removeOverlayLayer(std::shared_ptr<Layer> layer) { m_layerStack.removeOverlayLayer(layer); }
+
+bool Window::onWindowResized(TesTriste::WindowResizeEvent& e) {
+    m_width = e.getWidth();
+    m_height = e.getHeight();
+    glViewport(0, 0, m_width, m_height);
+    return false;
+}
 }

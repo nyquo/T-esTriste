@@ -1,10 +1,12 @@
 #pragma once
 
-#include <TesTristeLib/Core/gl.hpp>
-#include <TesTristeLib/Events/Event.hpp>
-#include <testristelib_export.h>
+#include "TesTristeLib/Core/LayerStack.hpp"
+#include "TesTristeLib/Core/gl.hpp"
+#include "TesTristeLib/Events/Event.hpp"
+#include "TesTristeLib/Events/WindowEvent.hpp"
 
 #include <string>
+#include <testristelib_export.h>
 
 namespace TesTriste {
 
@@ -27,7 +29,17 @@ class TET_EXPORT Window {
 
     void setEventCallBack(std::function<void(Event&)> callBack);
 
+    unsigned int getWidth() const { return m_width; }
+    unsigned int getHeight() const { return m_height; }
     GLFWwindow* getWindow() { return m_window; }
+
+    void pushLayer(std::shared_ptr<Layer> layer);
+    void pushOverlayLayer(std::shared_ptr<Layer> layer);
+    void removeLayer(std::shared_ptr<Layer> layer);
+    void removeOverlayLayer(std::shared_ptr<Layer> layer);
+
+  private:
+    bool onWindowResized(TesTriste::WindowResizeEvent& e);
 
   private:
     static constexpr unsigned int s_minWidth{ 400 };
@@ -42,6 +54,7 @@ class TET_EXPORT Window {
     unsigned int m_height;
 
     GLFWwindow* m_window;
+    LayerStack m_layerStack{ this };
 };
 
 }

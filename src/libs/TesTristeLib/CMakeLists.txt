@@ -1,18 +1,45 @@
 set(HEADERS
     Core/Application.hpp
     Core/gl.hpp
+    Core/Layer.hpp
+    Core/LayerStack.hpp
     Core/Logger.hpp
     Core/Window.hpp
     Events/Event.hpp
     Events/KeyEvent.hpp
     Events/MouseEvent.hpp
     Events/WindowEvent.hpp
+    Io/stb_image.h
+    TesTriste/TesTristeApp.hpp
+    TesTriste/MainLayer.hpp
+    TesTriste/Shapes/Cube.hpp
+    Renderer/Buffers.hpp
+    Renderer/Camera.hpp
+    Renderer/Mesh.hpp
+    Renderer/PerspectiveCamera.hpp
+    Renderer/Shader.hpp
+    Renderer/Vertex.hpp
 )
 
 set(SOURCES
     Core/Application.cpp
+    Core/Layer.cpp
+    Core/LayerStack.cpp
     Core/Logger.cpp
     Core/Window.cpp
+    Io/stb_image.cpp
+    TesTriste/TesTristeApp.cpp
+    TesTriste/MainLayer.cpp
+    TesTriste/Shapes/Cube.cpp
+    Renderer/Buffers.cpp
+    Renderer/Mesh.cpp
+    Renderer/PerspectiveCamera.cpp
+    Renderer/Shader.cpp
+)
+
+set(RESSOURCES
+    TesTriste/Shaders/BasicShader.frag
+    TesTriste/Shaders/BasicShader.vert
 )
 
 Tet_add_library(TesTristeLib
@@ -25,11 +52,14 @@ Tet_add_library(TesTristeLib
         $<INSTALL_INTERFACE:include/>
     PRIVATE_INCLUDES
     PUBLIC_LINKS
-        Glad
-    PRIVATE_LINKS
+        glm::glm
         Imgui
+        Glad
+        EnTT::EnTT
+    PRIVATE_LINKS
     PUBLIC_DEFINITIONS
     PRIVATE_DEFINITIONS
     RESSOURCES
+        ${RESSOURCES}
     EXPORT_MACRO_PREFIX TET
 )
