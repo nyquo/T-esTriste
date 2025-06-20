@@ -1,6 +1,7 @@
 set(HEADERS
     Core/Application.hpp
     Core/gl.hpp
+    Core/Input.hpp
     Core/Layer.hpp
     Core/LayerStack.hpp
     Core/Logger.hpp
@@ -19,6 +20,8 @@ set(HEADERS
     Renderer/PerspectiveCamera.hpp
     Renderer/Shader.hpp
     Renderer/Vertex.hpp
+    Scene/CameraMover.hpp
+    Scene/Components.hpp
 )
 
 set(SOURCES
@@ -35,6 +38,7 @@ set(SOURCES
     Renderer/Mesh.cpp
     Renderer/PerspectiveCamera.cpp
     Renderer/Shader.cpp
+    Scene/CameraMover.cpp
 )
 
 set(RESSOURCES
