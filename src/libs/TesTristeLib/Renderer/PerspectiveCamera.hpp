@@ -20,6 +20,8 @@ class TET_EXPORT PerspectiveCamera : public Camera {
     void rotateCamera(float xOffset, float yOffset);
     void translateCamera(glm::vec3 translation);
     void translateCameraRelative(glm::vec3 translation);
+    void setPosition(const glm::vec3& position);
+    void lookAt(const glm::vec3& target);
 
     void setViewPortSize(float m_width, float m_height);
 
@@ -31,6 +33,7 @@ class TET_EXPORT PerspectiveCamera : public Camera {
     void updateProjection();
 
   private:
+    // TODO Maybe I should get the position out of this class and use the TransformComponent?
     glm::vec3 m_position;
     glm::vec3 m_front{ 0.0F, 0.0F, -1.0F };
     glm::vec3 m_up;
@@ -41,7 +44,7 @@ class TET_EXPORT PerspectiveCamera : public Camera {
     float m_pitch;
 
     float m_near{ 0.1 };
-    float m_far{ 100 };
+    float m_far{ 150 };
 
     float m_fov{ 45.0 };
     float m_minFov{ 0.0F };

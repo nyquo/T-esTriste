@@ -1,13 +1,13 @@
 #pragma once
 
 #include <TesTristeLib/Core/gl.hpp>
-#include <TesTristeLib/TesTristeExport.hpp>
 
 #include <glm/glm.hpp>
+#include <testristelib_export.h>
 
-namespace core {
+namespace TesTriste {
 
-class TET_API Input {
+class TET_EXPORT Input {
   public:
     static bool isKeyPressed(int key) {
         auto* window = glfwGetCurrentContext();
