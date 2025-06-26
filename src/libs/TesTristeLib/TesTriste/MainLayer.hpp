@@ -1,8 +1,13 @@
+#pragma once
+
 #include <TesTristeLib/Core/Layer.hpp>
 #include <TesTristeLib/Renderer/Buffers.hpp>
+#include <TesTristeLib/Renderer/MeshManager.hpp>
 #include <TesTristeLib/Renderer/PerspectiveCamera.hpp>
 #include <TesTristeLib/Renderer/Shader.hpp>
+#include <TesTristeLib/Renderer/ShaderManager.hpp>
 #include <TesTristeLib/Scene/CameraMover.hpp>
+#include <TesTristeLib/TesTriste/Game/Board.hpp>
 #include <TesTristeLib/TesTriste/Shapes/Cube.hpp>
 
 #include <entt/entt.hpp>
@@ -26,21 +31,20 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
 
   private:
     void showFps();
+    void drawScene();
 
-    // TEMP
   private:
-    static constexpr int s_cubeSize = 1.0F;
-    Cube m_cube{ s_cubeSize };
-
+    ShaderManager m_shaderManager;
+    MeshManager m_meshManager;
+    entt::registry m_registry;
     std::shared_ptr<PerspectiveCamera> m_camera;
     CameraMover m_cameraMover{ m_camera };
 
-    std::unique_ptr<Shader> m_shader;
+    // TEMP
+  private:
+    MeshManager::MeshID m_cubeId;
+    static constexpr int s_cubeSize = 1.0F;
     glm::vec3 m_meshColor{ 0.0f, 1.0f, 0.0f };
-
-    entt::registry m_registry;
-
-    static constexpr char sep = std::filesystem::path::preferred_separator;
 };
 
 }

@@ -11,14 +11,18 @@ set(HEADERS
     Events/MouseEvent.hpp
     Events/WindowEvent.hpp
     Io/stb_image.h
-    TesTriste/TesTristeApp.hpp
     TesTriste/MainLayer.hpp
+    TesTriste/Game/Board.hpp
+    TesTriste/Game/Piece.hpp
     TesTriste/Shapes/Cube.hpp
+    TesTriste/TesTristeApp.hpp
     Renderer/Buffers.hpp
     Renderer/Camera.hpp
     Renderer/Mesh.hpp
+    Renderer/MeshManager.hpp
     Renderer/PerspectiveCamera.hpp
     Renderer/Shader.hpp
+    Renderer/ShaderManager.hpp
     Renderer/Vertex.hpp
     Scene/CameraMover.hpp
     Scene/Components.hpp
@@ -31,9 +35,11 @@ set(SOURCES
     Core/Logger.cpp
     Core/Window.cpp
     Io/stb_image.cpp
-    TesTriste/TesTristeApp.cpp
     TesTriste/MainLayer.cpp
+    TesTriste/Game/Piece.cpp
+    TesTriste/Game/Board.cpp
     TesTriste/Shapes/Cube.cpp
+    TesTriste/TesTristeApp.cpp
     Renderer/Buffers.cpp
     Renderer/Mesh.cpp
     Renderer/PerspectiveCamera.cpp

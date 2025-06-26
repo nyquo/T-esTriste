@@ -13,9 +13,17 @@ namespace TesTriste {
 MainLayer::MainLayer(float width, float height)
   : Layer(width, height)
   , m_camera(std::make_shared<PerspectiveCamera>(m_layerWidth, m_layerHeight, glm::vec3(0.0F, 0.0F, 10.0F))) {
-    m_shader = std::make_unique<Shader>(
-      std::string(RESSOURCES_FOLDER) + sep + "TesTriste" + sep + "Shaders" + sep + "BasicShader.vert",
-      std::string(RESSOURCES_FOLDER) + sep + "TesTriste" + sep + "Shaders" + sep + "BasicShader.frag");
+    const char sep = std::filesystem::path::preferred_separator;
+    const std::string ressourceFolder = std::string(RESSOURCES_FOLDER);
+    const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
+
+    // Load all shader
+    // TODO maybe this should be done elsewhere?
+    m_shaderManager.addShader(shaderFolder + "BasicShader.vert", shaderFolder + "BasicShader.frag", "BasicCubeShader");
+
+    // Load all meshes
+    // TODO maybe this should be also done elsewhere?
+    m_cubeId = m_meshManager.addMesh(std::make_unique<Cube>(s_cubeSize));
 
     auto entity = m_registry.create();
     m_registry.emplace<TesTriste::TransformComponent>(
@@ -45,22 +53,7 @@ void MainLayer::onUpdate() {
     m_camera->setViewPortSize(m_layerWidth, m_layerHeight);
 
     m_cameraMover.update();
-
-    m_shader->bind();
-    m_shader->setMat4("view", m_camera->getView());
-    m_shader->setMat4("projection", m_camera->getProjection());
-    m_shader->setVec3("meshColor", m_meshColor.r, m_meshColor.g, m_meshColor.b);
-    m_shader->setFloat("meshSize", s_cubeSize);
-    m_cube.bind();
-    m_shader->setVec3("meshOrigin", glm::vec3(0.0F, 0.0F, 0.0F));
-
-    auto view = m_registry.view<const TransformComponent>();
-    for(const auto& entity : view) {
-        const auto mat = view.get<const TransformComponent>(entity).getTransformMatrix();
-
-        m_shader->setMat4("model", mat);
-        glDrawElements(GL_TRIANGLES, m_cube.getIndicesCount(), GL_UNSIGNED_INT, 0);
-    }
+    drawScene();
 }
 
 void MainLayer::onImGuiRender() {
@@ -84,4 +77,27 @@ void MainLayer::showFps() {
     ImGui::End();
     ImGui::PopStyleVar();
 }
+
+void MainLayer::drawScene() {
+    const auto cubeShaderId = m_shaderManager.hashShaderId("BasicCubeShader");
+    auto& cubeShader = m_shaderManager.getShader(cubeShaderId);
+
+    cubeShader.bind();
+
+    cubeShader.setMat4("view", m_camera->getView());
+    cubeShader.setMat4("projection", m_camera->getProjection());
+    cubeShader.setVec3("meshColor", m_meshColor.r, m_meshColor.g, m_meshColor.b);
+    cubeShader.setFloat("meshSize", s_cubeSize);
+    cubeShader.setVec3("meshOrigin", glm::vec3(0.0F, 0.0F, 0.0F));
+    m_meshManager.getMesh(m_cubeId).bind();
+
+    auto view = m_registry.view<const TransformComponent>();
+    for(const auto& entity : view) {
+        const auto mat = view.get<const TransformComponent>(entity).getTransformMatrix();
+
+        cubeShader.setMat4("model", mat);
+        glDrawElements(GL_TRIANGLES, m_meshManager.getMesh(m_cubeId).getIndicesCount(), GL_UNSIGNED_INT, 0);
+    }
+}
+
 }
