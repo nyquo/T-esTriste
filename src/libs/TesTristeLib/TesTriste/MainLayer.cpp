@@ -1,6 +1,7 @@
 #include "MainLayer.hpp"
 
 #include <TesTristeLib/Core/Logger.hpp>
+#include <TesTristeLib/Events/Event.hpp>
 #include <TesTristeLib/Scene/Components.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -45,13 +46,13 @@ MainLayer::MainLayer(float width, float height)
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void MainLayer::onEvent(TesTriste::Event& event) { m_cameraMover.onEvent(event); }
+void MainLayer::onEvent(TesTriste::Event& event) {
+    m_cameraMover.onEvent(event);
+    EventDispatcher dispatcher(event);
+    dispatcher.dispatch<TesTriste::WindowResizeEvent>(BIND_EVENT_FN(MainLayer::onWindowResized));
+}
 
 void MainLayer::onUpdate() {
-    glViewport(0, 0, m_layerWidth, m_layerHeight);
-    // Todo Move this in an event when the window is resized
-    m_camera->setViewPortSize(m_layerWidth, m_layerHeight);
-
     m_cameraMover.update();
     drawScene();
 }
@@ -98,6 +99,13 @@ void MainLayer::drawScene() {
         cubeShader.setMat4("model", mat);
         glDrawElements(GL_TRIANGLES, m_meshManager.getMesh(m_cubeId).getIndicesCount(), GL_UNSIGNED_INT, 0);
     }
+}
+
+bool MainLayer::onWindowResized(TesTriste::WindowResizeEvent& event) {
+    glViewport(0, 0, event.getWidth(), event.getHeight());
+    m_camera->setViewPortSize(event.getWidth(), event.getHeight());
+
+    return false;
 }
 
 }

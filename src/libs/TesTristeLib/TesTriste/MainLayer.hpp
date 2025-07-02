@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TesTristeLib/Core/Layer.hpp>
+#include <TesTristeLib/Events/WindowEvent.hpp>
 #include <TesTristeLib/Renderer/Buffers.hpp>
 #include <TesTristeLib/Renderer/MeshManager.hpp>
 #include <TesTristeLib/Renderer/PerspectiveCamera.hpp>
@@ -32,6 +33,10 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
   private:
     void showFps();
     void drawScene();
+
+    // Event handlers
+  private:
+    bool onWindowResized(TesTriste::WindowResizeEvent& event);
 
   private:
     ShaderManager m_shaderManager;
