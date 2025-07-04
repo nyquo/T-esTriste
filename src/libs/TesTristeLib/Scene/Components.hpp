@@ -34,7 +34,6 @@ struct TET_EXPORT TransformComponent {
 struct TET_EXPORT MeshComponent {
     MeshManager::MeshID meshID;
     ShaderManager::ShaderID shaderID;
-    // unordered_map<std::string,
 
     MeshComponent() = delete;
     MeshComponent(MeshManager::MeshID id)

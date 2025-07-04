@@ -18,42 +18,22 @@ MainLayer::MainLayer(float width, float height)
     const std::string ressourceFolder = std::string(RESSOURCES_FOLDER);
     const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
 
-    // Load all shader
-    // TODO maybe this should be done elsewhere?
-    m_shaderManager.addShader(shaderFolder + "BasicShader.vert", shaderFolder + "BasicShader.frag", "BasicCubeShader");
+    m_shaderManager.addShader(shaderFolder + "BasicShader.vert", shaderFolder + "BasicShader.frag", "BasicShader");
 
-    // Load all meshes
-    // TODO maybe this should be also done elsewhere?
-    m_cubeId = m_meshManager.addMesh(std::make_unique<Cube>(s_cubeSize));
-
-    auto entity = m_registry.create();
-    m_registry.emplace<TesTriste::TransformComponent>(
-      entity, glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 1.0F, 1.0F));
-    for(auto x = -1; x <= 2; x += 2) {
-        for(auto y = -1; y <= 2; y += 2) {
-            for(auto z = -1; z <= 2; z += 2) {
-                auto entity = m_registry.create();
-                m_registry.emplace<TesTriste::TransformComponent>(
-                  entity,
-                  glm::vec3(x * s_cubeSize, y * s_cubeSize, z * s_cubeSize),
-                  glm::vec3(0.0F, 0.0F, 0.0F),
-                  glm::vec3(1.0F, 1.0F, 1.0F));
-            }
-        }
-    }
-
-    // OpenGL
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    m_boardGridId = m_meshManager.addMesh(std::make_unique<BoardGrid>(1.0F, s_boardWidth));
 }
 
 void MainLayer::onEvent(TesTriste::Event& event) {
-    m_cameraMover.onEvent(event);
     EventDispatcher dispatcher(event);
     dispatcher.dispatch<TesTriste::WindowResizeEvent>(BIND_EVENT_FN(MainLayer::onWindowResized));
+    m_cameraMover.onEvent(event);
+    m_board.onEvent(event);
 }
 
 void MainLayer::onUpdate() {
     m_cameraMover.update();
+    m_board.onUpdate();
+    m_board.onDraw();
     drawScene();
 }
 
@@ -80,25 +60,23 @@ void MainLayer::showFps() {
 }
 
 void MainLayer::drawScene() {
-    const auto cubeShaderId = m_shaderManager.hashShaderId("BasicCubeShader");
-    auto& cubeShader = m_shaderManager.getShader(cubeShaderId);
+    // General environnement of the scene will be drawn here.
+    // Thinks like the board and some decoration
 
-    cubeShader.bind();
+    static const auto basicShaderId = m_shaderManager.hashShaderId("BasicShader");
+    static const auto& basicShader = m_shaderManager.getShader(basicShaderId);
 
-    cubeShader.setMat4("view", m_camera->getView());
-    cubeShader.setMat4("projection", m_camera->getProjection());
-    cubeShader.setVec3("meshColor", m_meshColor.r, m_meshColor.g, m_meshColor.b);
-    cubeShader.setFloat("meshSize", s_cubeSize);
-    cubeShader.setVec3("meshOrigin", glm::vec3(0.0F, 0.0F, 0.0F));
-    m_meshManager.getMesh(m_cubeId).bind();
+    basicShader.bind();
 
-    auto view = m_registry.view<const TransformComponent>();
-    for(const auto& entity : view) {
-        const auto mat = view.get<const TransformComponent>(entity).getTransformMatrix();
+    basicShader.setMat4("view", m_camera->getView());
+    basicShader.setMat4("projection", m_camera->getProjection());
+    basicShader.setVec3("meshColor", m_meshColor);
+    basicShader.setMat4("model", glm::mat4(1.0F));
 
-        cubeShader.setMat4("model", mat);
-        glDrawElements(GL_TRIANGLES, m_meshManager.getMesh(m_cubeId).getIndicesCount(), GL_UNSIGNED_INT, 0);
-    }
+    const auto& boardMesh = m_meshManager.getMesh(m_boardGridId);
+    boardMesh.bind();
+
+    glDrawElements(GL_TRIANGLES, boardMesh.getIndicesCount(), GL_UNSIGNED_INT, 0);
 }
 
 bool MainLayer::onWindowResized(TesTriste::WindowResizeEvent& event) {

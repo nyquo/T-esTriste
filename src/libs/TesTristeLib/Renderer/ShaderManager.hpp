@@ -9,6 +9,8 @@
 
 namespace TesTriste {
 
+// TODO: make this a singleton and load all shaders in one place
+
 class TET_EXPORT ShaderManager {
   public:
     using ShaderID = uint32_t;

@@ -9,16 +9,19 @@
 #include <TesTristeLib/Renderer/ShaderManager.hpp>
 #include <TesTristeLib/Scene/CameraMover.hpp>
 #include <TesTristeLib/TesTriste/Game/Board.hpp>
-#include <TesTristeLib/TesTriste/Shapes/Cube.hpp>
+#include <TesTristeLib/TesTriste/Shapes/BoardGrid.hpp>
 
-#include <entt/entt.hpp>
 #include <filesystem>
 #include <testristelib_export.h>
 
+// TODO: May be worth a try to create a basic Renderer with a Command queue
 namespace TesTriste {
 
 class TET_EXPORT MainLayer : public TesTriste::Layer {
   public:
+    static constexpr unsigned int s_boardWidth{ 15 };
+    static constexpr unsigned int s_boardHeight{ 15 };
+
     MainLayer(float width = 800.0F, float height = 800.0F);
     MainLayer(const MainLayer& other) = delete;
     MainLayer(MainLayer&& other) = delete;
@@ -41,15 +44,13 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
   private:
     ShaderManager m_shaderManager;
     MeshManager m_meshManager;
-    entt::registry m_registry;
     std::shared_ptr<PerspectiveCamera> m_camera;
     CameraMover m_cameraMover{ m_camera };
+    Board m_board{ m_camera, s_boardWidth, s_boardHeight };
 
-    // TEMP
-  private:
-    MeshManager::MeshID m_cubeId;
-    static constexpr int s_cubeSize = 1.0F;
-    glm::vec3 m_meshColor{ 0.0f, 1.0f, 0.0f };
+    glm::vec3 m_meshColor{ 0.2f, 0.2f, 0.2f };
+
+    MeshManager::MeshID m_boardGridId{};
 };
 
 }

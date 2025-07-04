@@ -14,6 +14,7 @@ set(HEADERS
     TesTriste/MainLayer.hpp
     TesTriste/Game/Board.hpp
     TesTriste/Game/Piece.hpp
+    TesTriste/Shapes/BoardGrid.hpp
     TesTriste/Shapes/Cube.hpp
     TesTriste/TesTristeApp.hpp
     Renderer/Buffers.hpp
@@ -38,6 +39,7 @@ set(SOURCES
     TesTriste/MainLayer.cpp
     TesTriste/Game/Piece.cpp
     TesTriste/Game/Board.cpp
+    TesTriste/Shapes/BoardGrid.cpp
     TesTriste/Shapes/Cube.cpp
     TesTriste/TesTristeApp.cpp
     Renderer/Buffers.cpp
@@ -48,6 +50,8 @@ set(SOURCES
 )
 
 set(RESSOURCES
+    TesTriste/Shaders/CubeShader.frag
+    TesTriste/Shaders/CubeShader.vert
     TesTriste/Shaders/BasicShader.frag
     TesTriste/Shaders/BasicShader.vert
 )
