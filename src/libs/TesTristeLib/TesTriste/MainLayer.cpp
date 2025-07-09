@@ -14,6 +14,9 @@ namespace TesTriste {
 MainLayer::MainLayer(float width, float height)
   : Layer(width, height)
   , m_camera(std::make_shared<PerspectiveCamera>(m_layerWidth, m_layerHeight, glm::vec3(0.0F, 10.0F, 10.0F))) {
+    // Init camera pos
+    m_cameraMover.moveCamera(0.0F, 0.0F);
+
     const char sep = std::filesystem::path::preferred_separator;
     const std::string ressourceFolder = std::string(RESSOURCES_FOLDER);
     const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;

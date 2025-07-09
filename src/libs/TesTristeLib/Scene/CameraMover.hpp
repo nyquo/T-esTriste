@@ -11,6 +11,7 @@
 
 namespace TesTriste {
 
+// TODO Init CenterPoint distance and min/max in constuctor
 class TET_EXPORT CameraMover {
   public:
     CameraMover() = default;
@@ -21,14 +22,13 @@ class TET_EXPORT CameraMover {
     CameraMover operator=(CameraMover&& other) = delete;
     virtual ~CameraMover() = default;
 
-    void update();
-
-    void setCamera(const std::shared_ptr<PerspectiveCamera>& camera);
-
     void onEvent(Event& e);
 
+    void setCamera(const std::shared_ptr<PerspectiveCamera>& camera);
+    void update();
     void enable();
     void disable();
+    void moveCamera(float horizontalAngleOffset, float verticalOffset);
 
   private:
     glm::vec3 rotateAroundPoint(const glm::vec3& pointToRotate,

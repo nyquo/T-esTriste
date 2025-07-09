@@ -36,6 +36,19 @@ void CameraMover::enable() { m_enabled = true; }
 
 void CameraMover::disable() { m_enabled = false; }
 
+void CameraMover::moveCamera(float horizontalAngleOffset, float verticalOffset) {
+    auto oldCameraPos = m_camera->getPosition();
+    float newY = std::clamp(oldCameraPos.y + verticalOffset, m_minHeight, m_maxHeight);
+    float newX = oldCameraPos.x;
+    float newZ = oldCameraPos.z;
+
+    glm::vec3 newCameraPos =
+      rotateAroundPoint(glm::vec3(newX, newY, newZ), glm::vec3(0.0F, 0.0F, 0.0F), glm::radians(horizontalAngleOffset));
+
+    m_camera->setPosition(newCameraPos);
+    m_camera->lookAt(glm::vec3(0.0F, 0.0F, 0.0F));
+}
+
 glm::vec3 CameraMover::rotateAroundPoint(const glm::vec3& pointToRotate,
                                          const glm::vec3& pivot,
                                          float angleRadians,
@@ -71,18 +84,7 @@ bool CameraMover::onMouseMoved(MouseMovedEvent& event) {
         xOffset *= m_mouseSensitivityX;
         yOffset *= m_mouseSensitivityY;
 
-        auto oldCameraPos = m_camera->getPosition();
-        float newY = std::clamp(oldCameraPos.y + yOffset, m_minHeight, m_maxHeight);
-        float newX = oldCameraPos.x;
-        float newZ = oldCameraPos.z;
-
-        glm::vec3 newCameraPos =
-          rotateAroundPoint(glm::vec3(newX, newY, newZ), glm::vec3(0.0F, 0.0F, 0.0F), glm::radians(xOffset));
-
-        m_camera->setPosition(newCameraPos);
-        m_camera->lookAt(glm::vec3(0.0F, 0.0F, 0.0F));
-
-        // m_camera->rotateCamera(xOffset, yOffset);
+        moveCamera(xOffset, yOffset);
     }
 
     return false;
