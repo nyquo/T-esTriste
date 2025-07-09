@@ -22,7 +22,7 @@ Board::Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int board
 
     auto entity = m_registry.create();
     m_registry.emplace<TesTriste::TransformComponent>(
-      entity, glm::vec3(0.0F, 0.0F + 1.5F, 0.0F), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 1.0F, 1.0F));
+      entity, glm::vec3(0.0F, 0.0F + 15.5F, 0.0F), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 1.0F, 1.0F));
     m_registry.emplace<CurrentFallingPieceComponent>(entity);
     m_registry.emplace<ColorComponent>(entity, glm::vec3(1.0F, 0.0F, 0.0F));
     for(auto x = -1; x <= 2; x += 2) {
@@ -31,7 +31,7 @@ Board::Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int board
                 auto entity = m_registry.create();
                 m_registry.emplace<TesTriste::TransformComponent>(
                   entity,
-                  glm::vec3(x * s_cubeSize, y * s_cubeSize + 1.5F, z * s_cubeSize),
+                  glm::vec3(x * s_cubeSize, y * s_cubeSize + 15.5F, z * s_cubeSize),
                   glm::vec3(0.0F, 0.0F, 0.0F),
                   glm::vec3(1.0F, 1.0F, 1.0F));
 
@@ -64,11 +64,41 @@ void Board::onDraw() {
     }
 }
 
-void Board::onUpdate() {}
+void Board::onUpdate() {
+    if(!m_gameStarted) {
+        return;
+    }
+    makePiecesFall();
+    if(m_gameLogicData.currentFallingPieceReachedBottom) {
+        // generate a new piece
+    }
+}
 
 void Board::onEvent(TesTriste::Event& event) {
     EventDispatcher dispatcher(event);
     dispatcher.dispatch<KeyPressedEvent>(BIND_EVENT_FN(Board::onKeyPressed));
+}
+
+void Board::startGame() {
+    m_gameStarted = true;
+    m_gameLogicData.lastFallingPieceTime = glfwGetTime();
+}
+
+void Board::pauseGame() { m_gameStarted = false; }
+
+void Board::makePiecesFall() {
+    double currentTime = glfwGetTime();
+    double currentFallingDelayS = m_gameLogicData.currentFallingDelayMs / 1000.0F;
+    double timeSinceLastFalling = currentTime - m_gameLogicData.lastFallingPieceTime;
+    if(timeSinceLastFalling >= currentFallingDelayS) {
+        m_gameLogicData.lastFallingPieceTime = currentTime - (timeSinceLastFalling - currentFallingDelayS);
+
+        auto view = m_registry.view<TransformComponent, CurrentFallingPieceComponent>();
+        for(auto entity : view) {
+            auto& transformCmp = view.get<TransformComponent>(entity);
+            transformCmp.translation.y -= s_cubeSize;
+        }
+    }
 }
 
 bool Board::onKeyPressed(KeyPressedEvent& e) {

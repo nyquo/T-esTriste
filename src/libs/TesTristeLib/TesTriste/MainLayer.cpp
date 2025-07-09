@@ -45,6 +45,13 @@ void MainLayer::onImGuiRender() {
 
     ImGui::Begin("Settings");
     ImGui::DragFloat3("Mesh color", (float*)&m_meshColor, .01, 0.0f, 1.0f);
+    if(ImGui::Button("Play")) {
+        m_board.startGame();
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Pause")) {
+        m_board.pauseGame();
+    }
     ImGui::End();
 }
 

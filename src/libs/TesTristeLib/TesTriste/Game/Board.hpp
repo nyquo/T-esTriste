@@ -19,6 +19,15 @@ struct TET_EXPORT ColorComponent {
     glm::vec3 color{ 0.0F, 0.0F, 0.0F };
 };
 
+// For now the drawing, logic, etc is all done in the same class, maybe this should be separated in different "systems"
+// later
+
+struct GameLogicData {
+    int currentFallingDelayMs{ 1000 };
+    double lastFallingPieceTime{ 0.0 };
+    bool currentFallingPieceReachedBottom{ false };
+};
+
 class TET_EXPORT Board {
   public:
     // 3D matrix that represent the presence of piece on the board
@@ -31,9 +40,13 @@ class TET_EXPORT Board {
     Board& operator=(const Board& other) = delete;
     Board& operator=(Board&& other) = delete;
 
+    void onEvent(Event& event);
+
     void onDraw();
     void onUpdate();
-    void onEvent(Event& event);
+    void startGame();
+    void pauseGame();
+    void makePiecesFall();
 
   private:
     bool onKeyPressed(KeyPressedEvent& e);
@@ -50,6 +63,10 @@ class TET_EXPORT Board {
     static constexpr int s_cubeSize = 1.0F;
     const unsigned int BOARD_WIDTH;
     const unsigned int BOARD_HEIGHT;
+
+    bool m_gameStarted{ false };
+
+    GameLogicData m_gameLogicData;
 };
 
 }
