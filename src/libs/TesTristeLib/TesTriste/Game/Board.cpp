@@ -22,7 +22,7 @@ Board::Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int board
 
     auto entity = m_registry.create();
     m_registry.emplace<TesTriste::TransformComponent>(
-      entity, glm::vec3(0.0F, 0.0F + 4, 0.0F), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 1.0F, 1.0F));
+      entity, glm::vec3(0.0F, 0.0F + 1.5F, 0.0F), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 1.0F, 1.0F));
     m_registry.emplace<CurrentFallingPieceComponent>(entity);
     m_registry.emplace<ColorComponent>(entity, glm::vec3(1.0F, 0.0F, 0.0F));
     for(auto x = -1; x <= 2; x += 2) {
@@ -31,7 +31,7 @@ Board::Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int board
                 auto entity = m_registry.create();
                 m_registry.emplace<TesTriste::TransformComponent>(
                   entity,
-                  glm::vec3(x * s_cubeSize, y * s_cubeSize + 4, z * s_cubeSize),
+                  glm::vec3(x * s_cubeSize, y * s_cubeSize + 1.5F, z * s_cubeSize),
                   glm::vec3(0.0F, 0.0F, 0.0F),
                   glm::vec3(1.0F, 1.0F, 1.0F));
 

@@ -19,8 +19,8 @@ namespace TesTriste {
 
 class TET_EXPORT MainLayer : public TesTriste::Layer {
   public:
-    static constexpr unsigned int s_boardWidth{ 15 };
-    static constexpr unsigned int s_boardHeight{ 15 };
+    static constexpr unsigned int s_boardWidth{ 12 };
+    static constexpr unsigned int s_boardHeight{ 30 };
 
     MainLayer(float width = 800.0F, float height = 800.0F);
     MainLayer(const MainLayer& other) = delete;

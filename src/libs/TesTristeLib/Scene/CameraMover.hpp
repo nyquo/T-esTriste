@@ -51,7 +51,7 @@ class TET_EXPORT CameraMover {
     float m_mouseSensitivityY{ 0.02 };
 
     float m_centerPointDistance{ 10.0F };
-    float m_minHeight{ 0.0F };
+    float m_minHeight{ 10.0F };
     float m_maxHeight{ 30.0F };
 };
 

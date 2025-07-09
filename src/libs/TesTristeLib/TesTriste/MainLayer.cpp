@@ -13,7 +13,7 @@ namespace TesTriste {
 
 MainLayer::MainLayer(float width, float height)
   : Layer(width, height)
-  , m_camera(std::make_shared<PerspectiveCamera>(m_layerWidth, m_layerHeight, glm::vec3(0.0F, 0.0F, 10.0F))) {
+  , m_camera(std::make_shared<PerspectiveCamera>(m_layerWidth, m_layerHeight, glm::vec3(0.0F, 10.0F, 10.0F))) {
     const char sep = std::filesystem::path::preferred_separator;
     const std::string ressourceFolder = std::string(RESSOURCES_FOLDER);
     const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
@@ -66,14 +66,15 @@ void MainLayer::drawScene() {
     static const auto basicShaderId = m_shaderManager.hashShaderId("BasicShader");
     static const auto& basicShader = m_shaderManager.getShader(basicShaderId);
 
+    const BoardGrid& boardMesh = static_cast<const BoardGrid&>(m_meshManager.getMesh(m_boardGridId));
+
     basicShader.bind();
 
     basicShader.setMat4("view", m_camera->getView());
     basicShader.setMat4("projection", m_camera->getProjection());
     basicShader.setVec3("meshColor", m_meshColor);
-    basicShader.setMat4("model", glm::mat4(1.0F));
+    basicShader.setMat4("model", glm::translate(glm::mat4(1.0F), glm::vec3(0.0F, -boardMesh.getCellHeight(), 0.0F)));
 
-    const auto& boardMesh = m_meshManager.getMesh(m_boardGridId);
     boardMesh.bind();
 
     glDrawElements(GL_TRIANGLES, boardMesh.getIndicesCount(), GL_UNSIGNED_INT, 0);

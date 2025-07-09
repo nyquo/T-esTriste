@@ -1,36 +1,63 @@
 #include "BoardGrid.hpp"
 
+#include <TesTristeLib/Core/Logger.hpp>
+
 namespace TesTriste {
 
-BoardGrid::BoardGrid(float cellSize, unsigned int gridWidth)
-  : m_cellSize(cellSize)
-  , m_gridWidth(gridWidth) {
-    std::vector<Vertex> vertices;
-    vertices.reserve(8);
+// TODO make a nicer board grid
 
-    // TODO Fix normals and texture coordinates
-    for(float z = -cellSize / 2; z <= cellSize / 2; z += cellSize) {
-        for(float y = -cellSize / 2; y <= cellSize / 2; y += cellSize) {
-            for(float x = -cellSize / 2; x <= cellSize / 2; x += cellSize) {
-                vertices.emplace_back(glm::vec3(x, y / 4, z), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
+BoardGrid::BoardGrid(float cellSize, unsigned int gridSideCellCount)
+  : m_cellSize(cellSize)
+  , m_gridSideCellCount(gridSideCellCount)
+  , m_cellheight(cellSize / 8) {
+    std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+
+    vertices.reserve(verticesPerCell * gridSideCellCount * gridSideCellCount);
+    indices.reserve(indicesPerCell * gridSideCellCount * gridSideCellCount);
+
+    int cellIndex = 0;
+
+    float gridWidth = cellSize * gridSideCellCount;
+
+    for(float x = -(gridWidth / 2); x < gridWidth / 2; x += cellSize) {
+        for(float z = -(gridWidth / 2); z < gridWidth / 2; z += cellSize) {
+            addOneCell(vertices, indices, glm::vec3{ x + cellSize / 2, 0, z + cellSize / 2 }, cellIndex);
+            cellIndex += 1;
+        }
+    }
+
+    Mesh::reInit(std::move(vertices), std::move(indices));
+}
+
+void BoardGrid::addOneCell(std::vector<Vertex>& vertices,
+                           std::vector<unsigned int>& indices,
+                           glm::vec3 center,
+                           unsigned int cellIndex) {
+    float margin = m_cellSize / 16;
+
+    for(float z = -m_cellSize / 2 + margin; z <= m_cellSize / 2 - margin; z += m_cellSize - 2 * margin) {
+        for(float y = -m_cellheight / 2; y <= m_cellheight / 2; y += m_cellheight) {
+            for(float x = -m_cellSize / 2 + margin; x <= m_cellSize / 2 - margin; x += m_cellSize - 2 * margin) {
+                vertices.emplace_back(
+                  glm::vec3(x + center.x, y, z + center.z), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
             }
         }
     }
 
-    std::vector<unsigned int> indices;
+    unsigned int offset = cellIndex * verticesPerCell;
 
     // Each face is defined by 4 vertices BL, BR, TL, TR
     const std::vector<std::vector<unsigned int>> faces = {
-        { 0, 1, 2, 3 }, // Front face
-        { 4, 5, 6, 7 }, // Back face
-        { 4, 0, 6, 2 }, // Left face
-        { 1, 5, 3, 7 }, // Right face
-        { 2, 3, 6, 7 }, // Top face
-        { 4, 5, 0, 1 }  // Bottom face
+        { offset + 0, offset + 1, offset + 2, offset + 3 }, // Front face
+        { offset + 4, offset + 5, offset + 6, offset + 7 }, // Back face
+        { offset + 4, offset + 0, offset + 6, offset + 2 }, // Left face
+        { offset + 1, offset + 5, offset + 3, offset + 7 }, // Right face
+        { offset + 2, offset + 3, offset + 6, offset + 7 }, // Top face
+        { offset + 4, offset + 5, offset + 0, offset + 1 }  // Bottom face
     };
 
     // Insert triangle in clockwise order for each face
-    indices.reserve(faces.size() * 6);
     for(auto face : faces) {
         indices.push_back(face[0]);
         indices.push_back(face[2]);
@@ -39,9 +66,5 @@ BoardGrid::BoardGrid(float cellSize, unsigned int gridWidth)
         indices.push_back(face[3]);
         indices.push_back(face[1]);
     }
-
-    Mesh::reInit(std::move(vertices), std::move(indices));
 }
-
-void BoardGrid::drawOneCell(glm::vec3 center) {}
 }
