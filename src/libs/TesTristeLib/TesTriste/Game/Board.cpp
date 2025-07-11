@@ -20,6 +20,9 @@ Board::Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int board
     // TODO maybe this should be also done elsewhere?
     m_cubeId = m_meshManager.addMesh(std::make_unique<Cube>(s_cubeSize));
 
+    // Initialize the presence matrix
+    m_gameLogicData.presenceMatrix = PresenceMatrix(BOARD_WIDTH, PMSlice(BOARD_HEIGHT, PMLine(BOARD_WIDTH, false)));
+
     auto entity = m_registry.create();
     m_registry.emplace<TesTriste::TransformComponent>(
       entity, glm::vec3(0.0F, 0.0F + 15.5F, 0.0F), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 1.0F, 1.0F));
@@ -40,6 +43,9 @@ Board::Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int board
             }
         }
     }
+
+    populatePiecesPool();
+    populateColorPool();
 }
 
 void Board::onDraw() {
@@ -99,6 +105,57 @@ void Board::makePiecesFall() {
             transformCmp.translation.y -= s_cubeSize;
         }
     }
+}
+
+void Board::populatePiecesPool() {
+    // clang-format off
+    m_piecesPool.emplace_back(std::vector<glm::ivec3>{
+        { 0, 0, 0 },
+        { 1, 0, 0 },
+        { 2, 0, 0 },
+        { 3, 0, 0 }
+    });
+
+    // clang-format on
+}
+
+void Board::populateColorPool() {
+    m_colorPool.emplace_back(1.0F, 0.0F, 0.0F); // Red
+    m_colorPool.emplace_back(0.0F, 1.0F, 0.0F); // Green
+    m_colorPool.emplace_back(0.0F, 0.0F, 1.0F); // Blue
+    m_colorPool.emplace_back(1.0F, 1.0F, 0.0F); // Yellow
+}
+
+void Board::addNewFallingPiece() {
+    if(m_piecesPool.empty() || m_colorPool.empty()) {
+        return;
+    }
+
+    size_t randomIndex = rand() % m_piecesPool.size();
+    const auto& piece = m_piecesPool[randomIndex];
+
+    // for(const auto& slice : piece) {
+    //     for(const auto& row : slice) {
+    //         for(const auto& cell : row) {
+    //             if(cell) {
+    //                 // auto x =
+    //                 // if(m_gameLogicData.presenceMatrix[cell]) {
+    //                 //     // TODO if the cell is already occupied, we cannot add this piece, call game over func
+    //                 //     return;
+    //                 // }
+    //                 auto entity = m_registry.create();
+    //                 m_registry.emplace<TesTriste::TransformComponent>(entity,
+    //                                                                   glm::vec3(0.0F, 0.0F + 15.5F, 0.0F),
+    //                                                                   glm::vec3(0.0F, 0.0F, 0.0F),
+    //                                                                   glm::vec3(1.0F, 1.0F, 1.0F));
+    //                 m_registry.emplace<CurrentFallingPieceComponent>(entity);
+    //                 m_registry.emplace<ColorComponent>(entity, glm::vec3(1.0F, 0.0F, 0.0F));
+    //             }
+    //         }
+    //     }
+    // }
+
+    m_gameLogicData.currentFallingPiece = std::make_unique<Piece>(piece);
 }
 
 bool Board::onKeyPressed(KeyPressedEvent& e) {

@@ -1,24 +1,55 @@
 #pragma once
 
-#include <array>
 #include <glm/glm.hpp>
 #include <testristelib_export.h>
+#include <vector>
 
 namespace TesTriste {
 
 class TET_EXPORT Piece {
   public:
-    constexpr static int s_maxSize = 5;
-    using CubePresenceMatrix = std::array<std::array<std::array<bool, s_maxSize>, s_maxSize>, s_maxSize>;
+    Piece(std::vector<glm::ivec3> presenceMatrix) {
+        if(presenceMatrix.empty()) {
+            return;
+        }
+        size_t minX = presenceMatrix[0].x;
+        size_t maxX = presenceMatrix[0].x;
+        size_t minY = presenceMatrix[0].y;
+        size_t maxY = presenceMatrix[0].y;
+        size_t minZ = presenceMatrix[0].z;
+        size_t maxZ = presenceMatrix[0].z;
 
-    Piece(CubePresenceMatrix&& presenceMatrix, glm::vec3 color);
+        for(const auto& pos : presenceMatrix) {
+            if(pos.x < minX)
+                minX = pos.x;
+            if(pos.x > maxX)
+                maxX = pos.x;
+            if(pos.y < minY)
+                minY = pos.y;
+            if(pos.y > maxY)
+                maxY = pos.y;
+            if(pos.z < minZ)
+                minZ = pos.z;
+            if(pos.z > maxZ)
+                maxZ = pos.z;
+        }
 
-    CubePresenceMatrix getPresenceMatrix() const { return m_presenceMatrix; }
-    glm::vec3 getColor() const { return m_color; }
+        m_width = maxX - minX + 1;
+        m_height = maxY - minY + 1;
+        m_depth = maxZ - minZ + 1;
+    }
+    Piece(const Piece& other) = default;
+    Piece(Piece&& other) noexcept = default;
+    Piece& operator=(const Piece& other) = default;
+    Piece& operator=(Piece&& other) noexcept = default;
+
+    std::vector<glm::ivec3> getCubePositions() const { return m_cubePositions; }
 
   private:
-    CubePresenceMatrix m_presenceMatrix;
-    glm::vec3 m_color;
+    std::vector<glm::ivec3> m_cubePositions;
+    size_t m_width{ 0 };
+    size_t m_height{ 0 };
+    size_t m_depth{ 0 };
 };
 
 }

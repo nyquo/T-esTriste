@@ -22,18 +22,21 @@ struct TET_EXPORT ColorComponent {
 // For now the drawing, logic, etc is all done in the same class, maybe this should be separated in different "systems"
 // later
 
-struct GameLogicData {
-    int currentFallingDelayMs{ 1000 };
-    double lastFallingPieceTime{ 0.0 };
-    bool currentFallingPieceReachedBottom{ false };
-};
-
 class TET_EXPORT Board {
-  public:
-    // 3D matrix that represent the presence of piece on the board
-    // array[width][height][width] -> array[x][y][z]
-    // using BoardPresenceMatrix = std::array<std::array<std::array<bool, s_width>, s_height>, s_width>;
+    // PM -> Presence Matrix
+    // 3D matrix that represent the presence or not of a piece in given space ([x][y][z])
+    using PMLine = std::vector<bool>;    // line is on the z axis
+    using PMSlice = std::vector<PMLine>; // slice is on the y z plane
+    using PresenceMatrix = std::vector<PMSlice>;
+    struct TET_EXPORT GameLogicData {
+        int currentFallingDelayMs{ 1000 };
+        double lastFallingPieceTime{ 0.0 };
+        bool currentFallingPieceReachedBottom{ false };
+        std::unique_ptr<Piece> currentFallingPiece{ nullptr };
+        PresenceMatrix presenceMatrix{};
+    };
 
+  public:
     Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int boardWidth = 15, unsigned int boardHeight = 40);
     Board(const Board& other) = delete;
     Board(Board&& other) = delete;
@@ -46,13 +49,19 @@ class TET_EXPORT Board {
     void onUpdate();
     void startGame();
     void pauseGame();
-    void makePiecesFall();
 
   private:
     bool onKeyPressed(KeyPressedEvent& e);
 
   private:
-    // BoardPresenceMatrix m_presenceMatrix;
+    void makePiecesFall();
+    void populatePiecesPool();
+    void populateColorPool();
+    void addNewFallingPiece();
+
+  private:
+    std::vector<Piece> m_piecesPool;
+    std::vector<glm::vec3> m_colorPool;
     std::shared_ptr<PerspectiveCamera> m_camera;
 
     ShaderManager m_shaderManager;

@@ -37,7 +37,6 @@ set(SOURCES
     Core/Window.cpp
     Io/stb_image.cpp
     TesTriste/MainLayer.cpp
-    TesTriste/Game/Piece.cpp
     TesTriste/Game/Board.cpp
     TesTriste/Shapes/BoardGrid.cpp
     TesTriste/Shapes/Cube.cpp
