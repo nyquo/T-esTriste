@@ -97,6 +97,7 @@ void Board::makePiecesFall() {
                 m_gameLogicData.currentFallingPieceReachedBottom = true;
                 return; // The piece reached the bottom, stop falling
             }
+            // TODO Calculate things properly to make it work with size != 1.0F
         }
 
         for(auto entity : view) {
@@ -121,6 +122,15 @@ void Board::populatePiecesPool() {
         { 2, 0, 0 },
         { 3, 0, 0 },
         { 0, 1, 0 }
+    });
+
+    m_piecesPool.emplace_back(std::vector<glm::ivec3>{
+        { 1, 0, 1 },
+        { 1, 1, 1 },
+        { 1, 1, 0 },
+        { 1, 1, 2 },
+        { 0, 1, 1 },
+        { 2, 1, 1 }
     });
 
     // clang-format on
