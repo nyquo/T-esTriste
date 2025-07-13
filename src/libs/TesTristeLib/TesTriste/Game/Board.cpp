@@ -171,6 +171,15 @@ bool Board::onKeyPressed(KeyPressedEvent& e) {
     auto view = m_registry.view<TransformComponent, CurrentFallingPieceComponent>();
     for(auto entity : view) {
         auto& transformCmp = view.get<TransformComponent>(entity);
+        if(transformCmp.translation.x + translation.x < static_cast<int>(-BOARD_WIDTH) / 2 ||
+           transformCmp.translation.x + translation.x > static_cast<int>(BOARD_WIDTH) / 2 - 1 ||
+           transformCmp.translation.z + translation.z < static_cast<int>(-BOARD_WIDTH) / 2 ||
+           transformCmp.translation.z + translation.z > static_cast<int>(BOARD_WIDTH) / 2 - 1) {
+            return false; // Prevent moving out of bounds
+        }
+    }
+    for(auto entity : view) {
+        auto& transformCmp = view.get<TransformComponent>(entity);
         transformCmp.translation += translation;
     }
     return false;
