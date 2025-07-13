@@ -8,18 +8,18 @@ namespace TesTriste {
 
 class TET_EXPORT Piece {
   public:
-    Piece(std::vector<glm::ivec3> presenceMatrix) {
-        if(presenceMatrix.empty()) {
+    Piece(std::vector<glm::ivec3> cubePositions) {
+        if(cubePositions.empty()) {
             return;
         }
-        size_t minX = presenceMatrix[0].x;
-        size_t maxX = presenceMatrix[0].x;
-        size_t minY = presenceMatrix[0].y;
-        size_t maxY = presenceMatrix[0].y;
-        size_t minZ = presenceMatrix[0].z;
-        size_t maxZ = presenceMatrix[0].z;
+        size_t minX = cubePositions[0].x;
+        size_t maxX = cubePositions[0].x;
+        size_t minY = cubePositions[0].y;
+        size_t maxY = cubePositions[0].y;
+        size_t minZ = cubePositions[0].z;
+        size_t maxZ = cubePositions[0].z;
 
-        for(const auto& pos : presenceMatrix) {
+        for(const auto& pos : cubePositions) {
             if(pos.x < minX)
                 minX = pos.x;
             if(pos.x > maxX)
@@ -37,6 +37,8 @@ class TET_EXPORT Piece {
         m_width = maxX - minX + 1;
         m_height = maxY - minY + 1;
         m_depth = maxZ - minZ + 1;
+
+        m_cubePositions = std::move(cubePositions);
     }
     Piece(const Piece& other) = default;
     Piece(Piece&& other) noexcept = default;
@@ -44,6 +46,9 @@ class TET_EXPORT Piece {
     Piece& operator=(Piece&& other) noexcept = default;
 
     std::vector<glm::ivec3> getCubePositions() const { return m_cubePositions; }
+    size_t getWidth() const { return m_width; }
+    size_t getHeight() const { return m_height; }
+    size_t getDepth() const { return m_depth; }
 
   private:
     std::vector<glm::ivec3> m_cubePositions;

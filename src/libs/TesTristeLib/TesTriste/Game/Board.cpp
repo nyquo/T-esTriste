@@ -3,11 +3,15 @@
 #include <TesTristeLib/Scene/Components.hpp>
 #include <TesTristeLib/TesTriste/Shapes/Cube.hpp>
 
+#include <ctime>
+
 namespace TesTriste {
 Board::Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int boardWidth, unsigned int boardHeight)
   : m_camera(camera)
   , BOARD_WIDTH(boardWidth)
   , BOARD_HEIGHT(boardHeight) {
+    std::srand(std::time({}));
+
     const char sep = std::filesystem::path::preferred_separator;
     const std::string ressourceFolder = std::string(RESSOURCES_FOLDER);
     const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
@@ -23,29 +27,9 @@ Board::Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int board
     // Initialize the presence matrix
     m_gameLogicData.presenceMatrix = PresenceMatrix(BOARD_WIDTH, PMSlice(BOARD_HEIGHT, PMLine(BOARD_WIDTH, false)));
 
-    auto entity = m_registry.create();
-    m_registry.emplace<TesTriste::TransformComponent>(
-      entity, glm::vec3(0.0F, 0.0F + 15.5F, 0.0F), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 1.0F, 1.0F));
-    m_registry.emplace<CurrentFallingPieceComponent>(entity);
-    m_registry.emplace<ColorComponent>(entity, glm::vec3(1.0F, 0.0F, 0.0F));
-    for(auto x = -1; x <= 2; x += 2) {
-        for(auto y = -1; y <= 2; y += 2) {
-            for(auto z = -1; z <= 2; z += 2) {
-                auto entity = m_registry.create();
-                m_registry.emplace<TesTriste::TransformComponent>(
-                  entity,
-                  glm::vec3(x * s_cubeSize, y * s_cubeSize + 15.5F, z * s_cubeSize),
-                  glm::vec3(0.0F, 0.0F, 0.0F),
-                  glm::vec3(1.0F, 1.0F, 1.0F));
-
-                m_registry.emplace<CurrentFallingPieceComponent>(entity);
-                m_registry.emplace<ColorComponent>(entity, glm::vec3(0.0F, 1.0F, 0.0F));
-            }
-        }
-    }
-
     populatePiecesPool();
     populateColorPool();
+    addNewFallingPiece();
 }
 
 void Board::onDraw() {
@@ -74,10 +58,15 @@ void Board::onUpdate() {
     if(!m_gameStarted) {
         return;
     }
-    makePiecesFall();
     if(m_gameLogicData.currentFallingPieceReachedBottom) {
-        // generate a new piece
+        for(auto entity : m_registry.view<CurrentFallingPieceComponent>()) {
+            m_registry.remove<CurrentFallingPieceComponent>(entity);
+        }
+        m_gameLogicData.currentFallingPieceReachedBottom = false;
+        m_gameLogicData.currentFallingPiece = nullptr;
+        addNewFallingPiece();
     }
+    makePiecesFall();
 }
 
 void Board::onEvent(TesTriste::Event& event) {
@@ -100,6 +89,16 @@ void Board::makePiecesFall() {
         m_gameLogicData.lastFallingPieceTime = currentTime - (timeSinceLastFalling - currentFallingDelayS);
 
         auto view = m_registry.view<TransformComponent, CurrentFallingPieceComponent>();
+
+        // Check if the current falling piece can fall
+        for(auto entity : view) {
+            auto& transformCmp = view.get<TransformComponent>(entity);
+            if(transformCmp.translation.y <= 0.0F) {
+                m_gameLogicData.currentFallingPieceReachedBottom = true;
+                return; // The piece reached the bottom, stop falling
+            }
+        }
+
         for(auto entity : view) {
             auto& transformCmp = view.get<TransformComponent>(entity);
             transformCmp.translation.y -= s_cubeSize;
@@ -114,6 +113,14 @@ void Board::populatePiecesPool() {
         { 1, 0, 0 },
         { 2, 0, 0 },
         { 3, 0, 0 }
+    });
+
+    m_piecesPool.emplace_back(std::vector<glm::ivec3>{
+        { 0, 0, 0 },
+        { 1, 0, 0 },
+        { 2, 0, 0 },
+        { 3, 0, 0 },
+        { 0, 1, 0 }
     });
 
     // clang-format on
@@ -131,29 +138,21 @@ void Board::addNewFallingPiece() {
         return;
     }
 
-    size_t randomIndex = rand() % m_piecesPool.size();
-    const auto& piece = m_piecesPool[randomIndex];
+    size_t randomPieceIndex = rand() % m_piecesPool.size();
+    const auto& piece = m_piecesPool[randomPieceIndex];
 
-    // for(const auto& slice : piece) {
-    //     for(const auto& row : slice) {
-    //         for(const auto& cell : row) {
-    //             if(cell) {
-    //                 // auto x =
-    //                 // if(m_gameLogicData.presenceMatrix[cell]) {
-    //                 //     // TODO if the cell is already occupied, we cannot add this piece, call game over func
-    //                 //     return;
-    //                 // }
-    //                 auto entity = m_registry.create();
-    //                 m_registry.emplace<TesTriste::TransformComponent>(entity,
-    //                                                                   glm::vec3(0.0F, 0.0F + 15.5F, 0.0F),
-    //                                                                   glm::vec3(0.0F, 0.0F, 0.0F),
-    //                                                                   glm::vec3(1.0F, 1.0F, 1.0F));
-    //                 m_registry.emplace<CurrentFallingPieceComponent>(entity);
-    //                 m_registry.emplace<ColorComponent>(entity, glm::vec3(1.0F, 0.0F, 0.0F));
-    //             }
-    //         }
-    //     }
-    // }
+    size_t randomColorIndex = rand() % m_colorPool.size();
+    const auto& color = m_colorPool[randomColorIndex];
+
+    for(const auto& pos : piece.getCubePositions()) {
+        glm::vec3 position = glm::vec3((pos.x - static_cast<int>(piece.getWidth()) / 2) * s_cubeSize,
+                                       (pos.y + BOARD_HEIGHT) * s_cubeSize,
+                                       (pos.z - static_cast<int>(piece.getDepth()) / 2) * s_cubeSize);
+        auto entity = m_registry.create();
+        m_registry.emplace<TesTriste::TransformComponent>(entity, position, glm::vec3(0.0F), glm::vec3(1.0F));
+        m_registry.emplace<ColorComponent>(entity, color);
+        m_registry.emplace<CurrentFallingPieceComponent>(entity);
+    }
 
     m_gameLogicData.currentFallingPiece = std::make_unique<Piece>(piece);
 }
