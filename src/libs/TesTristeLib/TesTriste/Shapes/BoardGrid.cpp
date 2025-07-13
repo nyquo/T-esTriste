@@ -20,8 +20,8 @@ BoardGrid::BoardGrid(float cellSize, unsigned int gridSideCellCount)
 
     float gridWidth = cellSize * gridSideCellCount;
 
-    for(float x = -(gridWidth / 2); x < gridWidth / 2; x += cellSize) {
-        for(float z = -(gridWidth / 2); z < gridWidth / 2; z += cellSize) {
+    for(float x = 0; x < gridWidth; x += cellSize) {
+        for(float z = 0; z < gridWidth; z += cellSize) {
             addOneCell(vertices, indices, glm::vec3{ x + cellSize / 2, 0, z + cellSize / 2 }, cellIndex);
             cellIndex += 1;
         }
@@ -32,15 +32,16 @@ BoardGrid::BoardGrid(float cellSize, unsigned int gridSideCellCount)
 
 void BoardGrid::addOneCell(std::vector<Vertex>& vertices,
                            std::vector<unsigned int>& indices,
-                           glm::vec3 center,
+                           glm::vec3 corner,
                            unsigned int cellIndex) {
     float margin = m_cellSize / 16;
+    float correctedCellSize = m_cellSize - 2 * margin;
 
-    for(float z = -m_cellSize / 2 + margin; z <= m_cellSize / 2 - margin; z += m_cellSize - 2 * margin) {
-        for(float y = -m_cellheight / 2; y <= m_cellheight / 2; y += m_cellheight) {
-            for(float x = -m_cellSize / 2 + margin; x <= m_cellSize / 2 - margin; x += m_cellSize - 2 * margin) {
+    for(float z = margin; z <= correctedCellSize + margin; z += correctedCellSize) {
+        for(float y = 0; y <= m_cellheight; y += m_cellheight) {
+            for(float x = margin; x <= correctedCellSize + margin; x += correctedCellSize) {
                 vertices.emplace_back(
-                  glm::vec3(x + center.x, y, z + center.z), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
+                  glm::vec3(x + corner.x, y, z + corner.z), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
             }
         }
     }

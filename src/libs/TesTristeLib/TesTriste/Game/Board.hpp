@@ -50,6 +50,8 @@ class TET_EXPORT Board {
     void startGame();
     void pauseGame();
 
+    void setFallingDelay(int delayMs) { m_gameLogicData.currentFallingDelayMs = delayMs; }
+
   private:
     bool onKeyPressed(KeyPressedEvent& e);
 

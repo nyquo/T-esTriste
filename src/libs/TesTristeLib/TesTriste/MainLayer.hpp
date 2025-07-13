@@ -50,6 +50,8 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
 
     glm::vec3 m_meshColor{ 0.2f, 0.2f, 0.2f };
 
+    int m_fallingDelayMs{ 1000 };
+
     MeshManager::MeshID m_boardGridId{};
 };
 

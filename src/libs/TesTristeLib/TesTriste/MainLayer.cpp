@@ -52,6 +52,8 @@ void MainLayer::onImGuiRender() {
     if(ImGui::Button("Pause")) {
         m_board.pauseGame();
     }
+    ImGui::DragInt("Falling delay (ms)", &m_fallingDelayMs, 10.0f, 100, 5000);
+    m_board.setFallingDelay(m_fallingDelayMs);
     ImGui::End();
 }
 
@@ -83,7 +85,11 @@ void MainLayer::drawScene() {
     basicShader.setMat4("view", m_camera->getView());
     basicShader.setMat4("projection", m_camera->getProjection());
     basicShader.setVec3("meshColor", m_meshColor);
-    basicShader.setMat4("model", glm::translate(glm::mat4(1.0F), glm::vec3(0.0F, -boardMesh.getCellHeight(), 0.0F)));
+    basicShader.setMat4("model",
+                        glm::translate(glm::mat4(1.0F),
+                                       glm::vec3(-static_cast<int>(s_boardWidth) / 2,
+                                                 -boardMesh.getCellHeight(),
+                                                 -static_cast<int>(s_boardWidth) / 2)));
 
     boardMesh.bind();
 
