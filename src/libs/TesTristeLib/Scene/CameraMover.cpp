@@ -1,5 +1,6 @@
 #include "CameraMover.hpp"
 
+#include <algorithm>
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace TesTriste {
