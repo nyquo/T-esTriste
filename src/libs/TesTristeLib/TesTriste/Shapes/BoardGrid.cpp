@@ -22,7 +22,7 @@ BoardGrid::BoardGrid(float cellSize, unsigned int gridSideCellCount)
 
     for(float x = 0; x < gridWidth; x += cellSize) {
         for(float z = 0; z < gridWidth; z += cellSize) {
-            addOneCell(vertices, indices, glm::vec3{ x + cellSize / 2, 0, z + cellSize / 2 }, cellIndex);
+            addOneCell(vertices, indices, glm::vec3{ x, 0, z }, cellIndex);
             cellIndex += 1;
         }
     }

@@ -41,7 +41,7 @@ void Board::onDraw() {
     cubeShader.setMat4("view", m_camera->getView());
     cubeShader.setMat4("projection", m_camera->getProjection());
     cubeShader.setFloat("meshSize", s_cubeSize);
-    cubeShader.setVec3("meshOrigin", glm::vec3(0.0F, 0.0F, 0.0F));
+    cubeShader.setVec3("meshOrigin", glm::vec3(0.5F, 0.5F, 0.5F));
     m_meshManager.getMesh(m_cubeId).bind();
 
     auto view = m_registry.view<const TransformComponent, ColorComponent>();
@@ -127,10 +127,12 @@ void Board::populatePiecesPool() {
 }
 
 void Board::populateColorPool() {
-    m_colorPool.emplace_back(1.0F, 0.0F, 0.0F); // Red
-    m_colorPool.emplace_back(0.0F, 1.0F, 0.0F); // Green
-    m_colorPool.emplace_back(0.0F, 0.0F, 1.0F); // Blue
-    m_colorPool.emplace_back(1.0F, 1.0F, 0.0F); // Yellow
+    m_colorPool.emplace_back(1.0F, 0.0F, 0.0F);                                  // Red
+    m_colorPool.emplace_back(0.0F, 1.0F, 0.0F);                                  // Green
+    m_colorPool.emplace_back(0.0F, 0.0F, 1.0F);                                  // Blue
+    m_colorPool.emplace_back(1.0F, 1.0F, 0.0F);                                  // Yellow
+    m_colorPool.emplace_back(230.0F / 255.0F, 108.0F / 255.0F, 191.0F / 255.0F); // Purple-ish
+    m_colorPool.emplace_back(1.0F, 1.0F, 1.0F);                                  // White
 }
 
 void Board::addNewFallingPiece() {
