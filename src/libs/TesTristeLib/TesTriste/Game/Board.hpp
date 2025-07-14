@@ -13,7 +13,9 @@
 
 namespace TesTriste {
 
-struct TET_EXPORT CurrentFallingPieceComponent {};
+struct TET_EXPORT CurrentFallingPieceComponent {
+    glm::vec3 presenceMatrixPos{ 0.0F, 0.0F, 0.0F };
+};
 
 struct TET_EXPORT ColorComponent {
     glm::vec3 color{ 0.0F, 0.0F, 0.0F };

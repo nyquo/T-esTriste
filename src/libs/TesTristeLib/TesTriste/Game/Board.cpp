@@ -92,17 +92,41 @@ void Board::makePiecesFall() {
 
         // Check if the current falling piece can fall
         for(auto entity : view) {
-            auto& transformCmp = view.get<TransformComponent>(entity);
-            if(transformCmp.translation.y <= 0.0F) {
+            auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
+            if(currentFallingPieceCmp.presenceMatrixPos.y <= 0.0F) {
                 m_gameLogicData.currentFallingPieceReachedBottom = true;
-                return; // The piece reached the bottom, stop falling
+                break; // The piece reached the bottom, stop falling
             }
-            // TODO Calculate things properly to make it work with size != 1.0F
+            auto decreasedPos = currentFallingPieceCmp.presenceMatrixPos - glm::vec3(0.0F, 1.0F, 0.0F);
+            if(decreasedPos.x < m_gameLogicData.presenceMatrix.size() &&
+               decreasedPos.y < m_gameLogicData.presenceMatrix[0].size() &&
+               decreasedPos.z < m_gameLogicData.presenceMatrix[0][0].size()) {
+                if(m_gameLogicData.presenceMatrix[currentFallingPieceCmp.presenceMatrixPos.x]
+                                                 [currentFallingPieceCmp.presenceMatrixPos.y - 1]
+                                                 [currentFallingPieceCmp.presenceMatrixPos.z]) {
+                    m_gameLogicData.currentFallingPieceReachedBottom = true;
+                    break; // The piece reached another piece, stop falling
+                }
+            }
+        }
+
+        if(m_gameLogicData.currentFallingPieceReachedBottom) {
+            for(auto entity : view) {
+                auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
+                auto pos = currentFallingPieceCmp.presenceMatrixPos;
+                if(pos.x < m_gameLogicData.presenceMatrix.size() && pos.y < m_gameLogicData.presenceMatrix[0].size() &&
+                   pos.z < m_gameLogicData.presenceMatrix[0][0].size()) {
+                    m_gameLogicData.presenceMatrix[pos.x][pos.y][pos.z] = true;
+                }
+            }
+            return;
         }
 
         for(auto entity : view) {
             auto& transformCmp = view.get<TransformComponent>(entity);
             transformCmp.translation.y -= s_cubeSize;
+            auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
+            currentFallingPieceCmp.presenceMatrixPos.y -= 1.0F;
         }
     }
 }
@@ -160,12 +184,16 @@ void Board::addNewFallingPiece() {
         glm::vec3 position = glm::vec3((pos.x - static_cast<int>(piece.getWidth()) / 2) * s_cubeSize,
                                        (pos.y + BOARD_HEIGHT) * s_cubeSize,
                                        (pos.z - static_cast<int>(piece.getDepth()) / 2) * s_cubeSize);
+        glm::vec3 presenceMatrixPos = glm::vec3(BOARD_WIDTH / 2 - static_cast<int>(piece.getWidth()) / 2 + pos.x,
+                                                pos.y + BOARD_HEIGHT,
+                                                BOARD_WIDTH / 2 - static_cast<int>(piece.getDepth()) / 2 + pos.z);
         auto entity = m_registry.create();
         m_registry.emplace<TesTriste::TransformComponent>(entity, position, glm::vec3(0.0F), glm::vec3(1.0F));
         m_registry.emplace<ColorComponent>(entity, color);
-        m_registry.emplace<CurrentFallingPieceComponent>(entity);
+        m_registry.emplace<CurrentFallingPieceComponent>(entity, presenceMatrixPos);
     }
 
+    // TODO see if this is used
     m_gameLogicData.currentFallingPiece = std::make_unique<Piece>(piece);
 }
 
