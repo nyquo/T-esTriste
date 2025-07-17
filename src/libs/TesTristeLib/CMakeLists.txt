@@ -11,6 +11,7 @@ set(HEADERS
     Events/MouseEvent.hpp
     Events/WindowEvent.hpp
     Io/stb_image.h
+    Io/ProgramLocation.hpp
     TesTriste/MainLayer.hpp
     TesTriste/Game/Board.hpp
     TesTriste/Game/Piece.hpp
@@ -36,6 +37,7 @@ set(SOURCES
     Core/Logger.cpp
     Core/Window.cpp
     Io/stb_image.cpp
+    Io/ProgramLocation.cpp
     TesTriste/MainLayer.cpp
     TesTriste/Game/Board.cpp
     TesTriste/Shapes/BoardGrid.cpp

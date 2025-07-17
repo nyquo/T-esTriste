@@ -1,5 +1,6 @@
 #include "Board.hpp"
 
+#include <TesTristeLib/Io/ProgramLocation.hpp>
 #include <TesTristeLib/Scene/Components.hpp>
 #include <TesTristeLib/TesTriste/Shapes/Cube.hpp>
 
@@ -13,7 +14,8 @@ Board::Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int board
     std::srand(std::time({}));
 
     const char sep = std::filesystem::path::preferred_separator;
-    const std::string ressourceFolder = std::string(RESSOURCES_FOLDER);
+    const std::string ressourceFolder =
+      ProgramLocation::getProgramLocation().string() + sep + std::string(RESSOURCES_FOLDER);
     const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
 
     // Load all shader

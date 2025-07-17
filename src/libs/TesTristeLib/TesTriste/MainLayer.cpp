@@ -2,6 +2,7 @@
 
 #include <TesTristeLib/Core/Logger.hpp>
 #include <TesTristeLib/Events/Event.hpp>
+#include <TesTristeLib/Io/ProgramLocation.hpp>
 #include <TesTristeLib/Scene/Components.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -18,7 +19,8 @@ MainLayer::MainLayer(float width, float height)
     m_cameraMover.moveCamera(0.0F, 0.0F);
 
     const char sep = std::filesystem::path::preferred_separator;
-    const std::string ressourceFolder = std::string(RESSOURCES_FOLDER);
+    const std::string ressourceFolder =
+      ProgramLocation::getProgramLocation().string() + sep + std::string(RESSOURCES_FOLDER);
     const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
 
     m_shaderManager.addShader(shaderFolder + "BasicShader.vert", shaderFolder + "BasicShader.frag", "BasicShader");
