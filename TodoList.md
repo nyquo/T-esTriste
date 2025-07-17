@@ -1,0 +1,2 @@
+- Separate the Board class more properly
+- The drawing part should replicate the board class data 
