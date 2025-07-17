@@ -68,7 +68,15 @@ void Board::onUpdate() {
         m_gameLogicData.currentFallingPieceReachedBottom = false;
         addNewFallingPiece();
     }
-    makePiecesFall();
+    double currentTime = glfwGetTime();
+    double currentFallingDelayS = m_gameLogicData.currentFallingDelayMs / 1000.0F;
+    double timeSinceLastFalling = currentTime - m_gameLogicData.lastFallingPieceTime;
+    if(timeSinceLastFalling >= currentFallingDelayS) {
+        m_gameLogicData.lastFallingPieceTime = currentTime - (timeSinceLastFalling - currentFallingDelayS);
+
+        makePiecesFall();
+    }
+
     removeCompletedPlanes();
 }
 
@@ -85,45 +93,38 @@ void Board::startGame() {
 void Board::pauseGame() { m_gameStarted = false; }
 
 void Board::makePiecesFall() {
-    double currentTime = glfwGetTime();
-    double currentFallingDelayS = m_gameLogicData.currentFallingDelayMs / 1000.0F;
-    double timeSinceLastFalling = currentTime - m_gameLogicData.lastFallingPieceTime;
-    if(timeSinceLastFalling >= currentFallingDelayS) {
-        m_gameLogicData.lastFallingPieceTime = currentTime - (timeSinceLastFalling - currentFallingDelayS);
+    auto view = m_registry.view<TransformComponent, CurrentFallingPieceComponent>();
 
-        auto view = m_registry.view<TransformComponent, CurrentFallingPieceComponent>();
+    // Check if the current falling piece can fall
+    for(auto entity : view) {
+        auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
+        if(currentFallingPieceCmp.presenceMatrixPos.y <= 0.0F) {
+            m_gameLogicData.currentFallingPieceReachedBottom = true;
+            break; // The piece reached the bottom, stop falling
+        }
+        auto decreasedPos = currentFallingPieceCmp.presenceMatrixPos - glm::uvec3(0.0F, 1.0F, 0.0F);
+        if(isPositionOccupied(decreasedPos)) {
+            m_gameLogicData.currentFallingPieceReachedBottom = true;
+            break; // The piece reached another piece, stop falling
+        }
+    }
 
-        // Check if the current falling piece can fall
+    if(m_gameLogicData.currentFallingPieceReachedBottom) {
         for(auto entity : view) {
             auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
-            if(currentFallingPieceCmp.presenceMatrixPos.y <= 0.0F) {
-                m_gameLogicData.currentFallingPieceReachedBottom = true;
-                break; // The piece reached the bottom, stop falling
-            }
-            auto decreasedPos = currentFallingPieceCmp.presenceMatrixPos - glm::uvec3(0.0F, 1.0F, 0.0F);
-            if(isPositionOccupied(decreasedPos)) {
-                m_gameLogicData.currentFallingPieceReachedBottom = true;
-                break; // The piece reached another piece, stop falling
+            auto pos = currentFallingPieceCmp.presenceMatrixPos;
+            if(isPositionValid(pos)) {
+                m_gameLogicData.presenceMatrix[pos.x][pos.y][pos.z] = entity;
             }
         }
+        return;
+    }
 
-        if(m_gameLogicData.currentFallingPieceReachedBottom) {
-            for(auto entity : view) {
-                auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
-                auto pos = currentFallingPieceCmp.presenceMatrixPos;
-                if(isPositionValid(pos)) {
-                    m_gameLogicData.presenceMatrix[pos.x][pos.y][pos.z] = entity;
-                }
-            }
-            return;
-        }
-
-        for(auto entity : view) {
-            auto& transformCmp = view.get<TransformComponent>(entity);
-            transformCmp.translation.y -= s_cubeSize;
-            auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
-            currentFallingPieceCmp.presenceMatrixPos.y -= 1.0F;
-        }
+    for(auto entity : view) {
+        auto& transformCmp = view.get<TransformComponent>(entity);
+        transformCmp.translation.y -= s_cubeSize;
+        auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
+        currentFallingPieceCmp.presenceMatrixPos.y -= 1.0F;
     }
 }
 
@@ -293,6 +294,15 @@ bool Board::isPlaneEmpty(size_t y) const {
 }
 
 bool Board::onKeyPressed(KeyPressedEvent& e) {
+    if(!m_gameStarted) {
+        return false;
+    }
+    if(e.getKeyCode() == GLFW_KEY_SPACE) {
+        while(!m_gameLogicData.currentFallingPieceReachedBottom) {
+            makePiecesFall();
+        }
+        return false;
+    }
     glm::ivec3 translation{ 0, 0, 0 };
     if(e.getKeyCode() == GLFW_KEY_A) {
         translation = { -1, 0, 0 };
