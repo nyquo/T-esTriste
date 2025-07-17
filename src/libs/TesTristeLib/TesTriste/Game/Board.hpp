@@ -14,7 +14,7 @@
 namespace TesTriste {
 
 struct TET_EXPORT CurrentFallingPieceComponent {
-    glm::vec3 presenceMatrixPos{ 0.0F, 0.0F, 0.0F };
+    glm::uvec3 presenceMatrixPos{ 0, 0, 0 };
 };
 
 struct TET_EXPORT ColorComponent {
@@ -25,16 +25,16 @@ struct TET_EXPORT ColorComponent {
 // later
 
 class TET_EXPORT Board {
+    using OptEntity = std::optional<entt::entity>;
     // PM -> Presence Matrix
     // 3D matrix that represent the presence or not of a piece in given space ([x][y][z])
-    using PMLine = std::vector<bool>;    // line is on the z axis
-    using PMSlice = std::vector<PMLine>; // slice is on the y z plane
+    using PMLine = std::vector<OptEntity>; // line is on the z axis
+    using PMSlice = std::vector<PMLine>;   // slice is on the y z plane
     using PresenceMatrix = std::vector<PMSlice>;
     struct TET_EXPORT GameLogicData {
         int currentFallingDelayMs{ 1000 };
         double lastFallingPieceTime{ 0.0 };
         bool currentFallingPieceReachedBottom{ false };
-        std::unique_ptr<Piece> currentFallingPiece{ nullptr };
         PresenceMatrix presenceMatrix{};
     };
 
@@ -62,6 +62,11 @@ class TET_EXPORT Board {
     void populatePiecesPool();
     void populateColorPool();
     void addNewFallingPiece();
+    void removeCompletedPlanes();
+    std::vector<size_t> getPlanesToRemove() const;
+    bool isPositionValid(const glm::uvec3& pos) const;
+    bool isPositionOccupied(const glm::uvec3& pos) const;
+    bool isPlaneEmpty(size_t y) const;
 
   private:
     std::vector<Piece> m_piecesPool;

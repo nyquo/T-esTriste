@@ -8,7 +8,7 @@ namespace TesTriste {
 
 class TET_EXPORT Piece {
   public:
-    Piece(std::vector<glm::ivec3> cubePositions) {
+    Piece(std::vector<glm::uvec3> cubePositions) {
         if(cubePositions.empty()) {
             return;
         }
@@ -45,13 +45,13 @@ class TET_EXPORT Piece {
     Piece& operator=(const Piece& other) = default;
     Piece& operator=(Piece&& other) noexcept = default;
 
-    std::vector<glm::ivec3> getCubePositions() const { return m_cubePositions; }
+    std::vector<glm::uvec3> getCubePositions() const { return m_cubePositions; }
     size_t getWidth() const { return m_width; }
     size_t getHeight() const { return m_height; }
     size_t getDepth() const { return m_depth; }
 
   private:
-    std::vector<glm::ivec3> m_cubePositions;
+    std::vector<glm::uvec3> m_cubePositions;
     size_t m_width{ 0 };
     size_t m_height{ 0 };
     size_t m_depth{ 0 };
