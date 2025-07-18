@@ -226,9 +226,17 @@ void Board::removeCompletedPlanes() {
         if(isPlaneEmpty(yToShift) && emptyPlanesHandled >= planesToRemove.size()) {
             break;
         }
-        // move this plane down;
         if(std::find(planesToRemove.begin(), planesToRemove.end(), yToShift) != planesToRemove.end()) {
             emptyPlanesHandled++;
+        } else {
+            // move this plane down;
+            for(size_t x = 0; x < BOARD_WIDTH; ++x) {
+                for(size_t z = 0; z < BOARD_WIDTH; ++z) {
+                    m_gameLogicData.presenceMatrix.at(x).at(yToShift - emptyPlanesHandled).at(z) =
+                      m_gameLogicData.presenceMatrix.at(x).at(yToShift).at(z);
+                    m_gameLogicData.presenceMatrix.at(x).at(yToShift).at(z) = std::nullopt;
+                }
+            }
         }
         yToShift++;
     }
