@@ -1,18 +1,27 @@
+#pragma once
+
 #include <TesTristeLib/Core/Layer.hpp>
+#include <TesTristeLib/Events/WindowEvent.hpp>
 #include <TesTristeLib/Renderer/Buffers.hpp>
+#include <TesTristeLib/Renderer/MeshManager.hpp>
 #include <TesTristeLib/Renderer/PerspectiveCamera.hpp>
 #include <TesTristeLib/Renderer/Shader.hpp>
+#include <TesTristeLib/Renderer/ShaderManager.hpp>
 #include <TesTristeLib/Scene/CameraMover.hpp>
-#include <TesTristeLib/TesTriste/Shapes/Cube.hpp>
+#include <TesTristeLib/TesTriste/Game/Board.hpp>
+#include <TesTristeLib/TesTriste/Shapes/BoardGrid.hpp>
 
-#include <entt/entt.hpp>
 #include <filesystem>
 #include <testristelib_export.h>
 
+// TODO: May be worth a try to create a basic Renderer with a Command queue
 namespace TesTriste {
 
 class TET_EXPORT MainLayer : public TesTriste::Layer {
   public:
+    static constexpr unsigned int s_boardWidth{ 10 };
+    static constexpr unsigned int s_boardHeight{ 12 };
+
     MainLayer(float width = 800.0F, float height = 800.0F);
     MainLayer(const MainLayer& other) = delete;
     MainLayer(MainLayer&& other) = delete;
@@ -26,21 +35,24 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
 
   private:
     void showFps();
+    void drawScene();
 
-    // TEMP
+    // Event handlers
   private:
-    static constexpr int s_cubeSize = 1.0F;
-    Cube m_cube{ s_cubeSize };
+    bool onWindowResized(TesTriste::WindowResizeEvent& event);
 
+  private:
+    ShaderManager m_shaderManager;
+    MeshManager m_meshManager;
     std::shared_ptr<PerspectiveCamera> m_camera;
     CameraMover m_cameraMover{ m_camera };
+    Board m_board{ m_camera, s_boardWidth, s_boardHeight };
 
-    std::unique_ptr<Shader> m_shader;
-    glm::vec3 m_meshColor{ 0.0f, 1.0f, 0.0f };
+    glm::vec3 m_meshColor{ 0.2f, 0.2f, 0.2f };
 
-    entt::registry m_registry;
+    int m_fallingDelayMs{ 1000 };
 
-    static constexpr char sep = std::filesystem::path::preferred_separator;
+    MeshManager::MeshID m_boardGridId{};
 };
 
 }

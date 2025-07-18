@@ -1,3 +1,5 @@
+#pragma once
+
 #include <TesTristeLib/Renderer/Mesh.hpp>
 
 #include <testristelib_export.h>
