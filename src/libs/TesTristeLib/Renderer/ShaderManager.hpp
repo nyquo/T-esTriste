@@ -9,8 +9,6 @@
 
 namespace TesTriste {
 
-// TODO: make this a singleton and load all shaders in one place
-
 class TET_EXPORT ShaderManager {
   public:
     using ShaderID = uint32_t;
@@ -27,7 +25,7 @@ class TET_EXPORT ShaderManager {
         return static_cast<ShaderID>(hasher(name));
     }
 
-    ShaderID addShader(std::unique_ptr<Shader> shader, const std::string& name = "") {
+    ShaderID addShader(std::shared_ptr<Shader> shader, const std::string& name = "") {
         ShaderID id = hashShaderId(name);
         if(m_shaders.contains(id)) {
             Logger::logWarning("Shader with ID already exists, replacing it.");
@@ -41,20 +39,26 @@ class TET_EXPORT ShaderManager {
         if(m_shaders.contains(id)) {
             Logger::logWarning("Shader with ID already exists, replacing it.");
         }
-        m_shaders[id] = std::make_unique<Shader>(vertexPath, fragmentPath);
+        m_shaders[id] = std::make_shared<Shader>(vertexPath, fragmentPath);
         return id;
     }
 
-    Shader& getShader(ShaderID id) {
+    std::shared_ptr<Shader> getShader(std::string name) {
+        ShaderID id = hashShaderId(name);
+        return getShader(id);
+    }
+
+    std::shared_ptr<Shader> getShader(ShaderID id) {
         auto it = m_shaders.find(id);
         if(it != m_shaders.end()) {
-            return *(it->second);
+            return it->second;
         }
         Logger::logError("Shader with given ID does not exist.");
+        return {};
     }
 
   private:
-    std::unordered_map<ShaderID, std::unique_ptr<Shader>> m_shaders;
+    std::unordered_map<ShaderID, std::shared_ptr<Shader>> m_shaders;
 };
 
 }

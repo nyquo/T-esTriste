@@ -1,7 +1,7 @@
-#include "MainLayer.hpp"
-
 #include <TesTristeLib/Core/Application.hpp>
 #include <TesTristeLib/Events/WindowEvent.hpp>
+#include <TesTristeLib/TesTriste/AppContext.hpp>
+#include <TesTristeLib/TesTriste/MainLayer.hpp>
 
 #include <testristelib_export.h>
 
@@ -17,6 +17,7 @@ class TET_EXPORT TesTristeApp : public TesTriste::Application {
     bool onWindowResized(TesTriste::WindowResizeEvent& event);
 
   private:
+    std::shared_ptr<AppContext> m_appContext;
     std::shared_ptr<MainLayer> m_mainLayer;
 };
 

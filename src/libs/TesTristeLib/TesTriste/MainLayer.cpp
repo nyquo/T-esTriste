@@ -12,20 +12,14 @@
 
 namespace TesTriste {
 
-MainLayer::MainLayer(float width, float height)
+MainLayer::MainLayer(std::shared_ptr<AppContext> appContext, float width, float height)
   : Layer(width, height)
+  , m_appContext(std::move(appContext))
   , m_camera(std::make_shared<PerspectiveCamera>(m_layerWidth, m_layerHeight, glm::vec3(0.0F, 10.0F, 10.0F))) {
     // Init camera pos
     m_cameraMover.moveCamera(0.0F, 0.0F);
 
-    const char sep = std::filesystem::path::preferred_separator;
-    const std::string ressourceFolder =
-      ProgramLocation::getProgramLocation().string() + sep + std::string(RESSOURCES_FOLDER);
-    const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
-
-    m_shaderManager.addShader(shaderFolder + "BasicShader.vert", shaderFolder + "BasicShader.frag", "BasicShader");
-
-    m_boardGridId = m_meshManager.addMesh(std::make_unique<BoardGrid>(1.0F, s_boardWidth));
+    initRessources();
 }
 
 void MainLayer::onEvent(TesTriste::Event& event) {
@@ -59,6 +53,16 @@ void MainLayer::onImGuiRender() {
     ImGui::End();
 }
 
+void MainLayer::initRessources() {
+    const char sep = std::filesystem::path::preferred_separator;
+    const std::string ressourceFolder =
+      ProgramLocation::getProgramLocation().string() + sep + std::string(RESSOURCES_FOLDER);
+    const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
+    m_appContext->shaderManager.addShader(
+      shaderFolder + "BasicShader.vert", shaderFolder + "BasicShader.frag", "BasicShader");
+    m_appContext->meshManager.addMesh(std::make_unique<BoardGrid>(s_cubeSize, s_boardWidth), "BoardGrid");
+}
+
 void MainLayer::showFps() {
     const float fps = ImGui::GetIO().Framerate;
     ImGui::SetNextWindowPos(ImVec2(10, 10));
@@ -77,25 +81,24 @@ void MainLayer::drawScene() {
     // General environnement of the scene will be drawn here.
     // Thinks like the board and some decoration
 
-    static const auto basicShaderId = m_shaderManager.hashShaderId("BasicShader");
-    static const auto& basicShader = m_shaderManager.getShader(basicShaderId);
+    static const auto basicShaderId = m_appContext->shaderManager.hashShaderId("BasicShader");
+    static const auto& basicShader = m_appContext->shaderManager.getShader(basicShaderId);
 
-    const BoardGrid& boardMesh = static_cast<const BoardGrid&>(m_meshManager.getMesh(m_boardGridId));
+    static const auto boardGridId = m_appContext->meshManager.hashMeshId("BoardGrid");
+    const auto boardMesh = dynamic_pointer_cast<BoardGrid>(m_appContext->meshManager.getMesh(boardGridId));
 
-    basicShader.bind();
+    basicShader->bind();
+    basicShader->setMat4("view", m_camera->getView());
+    basicShader->setMat4("projection", m_camera->getProjection());
+    basicShader->setVec3("meshColor", m_meshColor);
+    basicShader->setMat4("model",
+                         glm::translate(glm::mat4(1.0F),
+                                        glm::vec3(-static_cast<int>(s_boardWidth) / 2,
+                                                  -boardMesh->getCellHeight(),
+                                                  -static_cast<int>(s_boardWidth) / 2)));
 
-    basicShader.setMat4("view", m_camera->getView());
-    basicShader.setMat4("projection", m_camera->getProjection());
-    basicShader.setVec3("meshColor", m_meshColor);
-    basicShader.setMat4("model",
-                        glm::translate(glm::mat4(1.0F),
-                                       glm::vec3(-static_cast<int>(s_boardWidth) / 2,
-                                                 -boardMesh.getCellHeight(),
-                                                 -static_cast<int>(s_boardWidth) / 2)));
-
-    boardMesh.bind();
-
-    glDrawElements(GL_TRIANGLES, boardMesh.getIndicesCount(), GL_UNSIGNED_INT, 0);
+    boardMesh->bind();
+    glDrawElements(GL_TRIANGLES, boardMesh->getIndicesCount(), GL_UNSIGNED_INT, 0);
 }
 
 bool MainLayer::onWindowResized(TesTriste::WindowResizeEvent& event) {

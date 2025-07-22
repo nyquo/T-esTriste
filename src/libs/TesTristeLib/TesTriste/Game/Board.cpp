@@ -7,28 +7,21 @@
 #include <ctime>
 
 namespace TesTriste {
-Board::Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int boardWidth, unsigned int boardHeight)
-  : m_camera(camera)
+Board::Board(std::shared_ptr<AppContext> appContext,
+             std::shared_ptr<PerspectiveCamera> camera,
+             unsigned int boardWidth,
+             unsigned int boardHeight)
+  : m_appContext(std::move(appContext))
+  , m_camera(std::move(camera))
   , BOARD_WIDTH(boardWidth)
   , BOARD_HEIGHT(boardHeight) {
     std::srand(std::time({}));
 
-    const char sep = std::filesystem::path::preferred_separator;
-    const std::string ressourceFolder =
-      ProgramLocation::getProgramLocation().string() + sep + std::string(RESSOURCES_FOLDER);
-    const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
-
-    // Load all shader
-    // TODO maybe this should be done elsewhere?
-    m_shaderManager.addShader(shaderFolder + "CubeShader.vert", shaderFolder + "CubeShader.frag", "BasicCubeShader");
-
-    // Load all meshes
-    // TODO maybe this should be also done elsewhere?
-    m_cubeId = m_meshManager.addMesh(std::make_unique<Cube>(s_cubeSize));
-
     // Initialize the presence matrix
     m_gameLogicData.presenceMatrix =
       PresenceMatrix(BOARD_WIDTH, PMSlice(BOARD_HEIGHT, PMLine(BOARD_WIDTH, std::nullopt)));
+
+    initRessources();
 
     populatePiecesPool();
     populateColorPool();
@@ -36,24 +29,29 @@ Board::Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int board
 }
 
 void Board::onDraw() {
-    static const auto cubeShaderId = m_shaderManager.hashShaderId("BasicCubeShader");
-    auto& cubeShader = m_shaderManager.getShader(cubeShaderId);
+    static const auto cubeShaderId = m_appContext->shaderManager.hashShaderId("BasicCubeShader");
+    static const auto& cubeShader = m_appContext->shaderManager.getShader(cubeShaderId);
 
-    cubeShader.bind();
+    cubeShader->bind();
 
-    cubeShader.setMat4("view", m_camera->getView());
-    cubeShader.setMat4("projection", m_camera->getProjection());
-    cubeShader.setFloat("meshSize", s_cubeSize);
-    cubeShader.setVec3("meshOrigin", glm::vec3(0.5F, 0.5F, 0.5F));
-    m_meshManager.getMesh(m_cubeId).bind();
+    cubeShader->setMat4("view", m_camera->getView());
+    cubeShader->setMat4("projection", m_camera->getProjection());
+    cubeShader->setFloat("meshSize", s_cubeSize);
+    cubeShader->setVec3("meshOrigin", glm::vec3(0.5F, 0.5F, 0.5F));
+
+    static const auto cubeId = m_appContext->meshManager.hashMeshId("coloredCubeMesh");
+    const auto cube = m_appContext->meshManager.getMesh(cubeId);
+
+    cube->bind();
 
     auto view = m_registry.view<const TransformComponent, ColorComponent>();
+
     for(auto [entity, transformCmp, colorCmp] : view.each()) {
-        cubeShader.setVec3("meshColor", colorCmp.color);
+        cubeShader->setVec3("meshColor", colorCmp.color);
         const auto mat = transformCmp.getTransformMatrix();
 
-        cubeShader.setMat4("model", mat);
-        glDrawElements(GL_TRIANGLES, m_meshManager.getMesh(m_cubeId).getIndicesCount(), GL_UNSIGNED_INT, 0);
+        cubeShader->setMat4("model", mat);
+        glDrawElements(GL_TRIANGLES, cube->getIndicesCount(), GL_UNSIGNED_INT, 0);
     }
 }
 
@@ -91,6 +89,18 @@ void Board::startGame() {
 }
 
 void Board::pauseGame() { m_gameStarted = false; }
+
+void Board::initRessources() {
+    const char sep = std::filesystem::path::preferred_separator;
+    const std::string ressourceFolder =
+      ProgramLocation::getProgramLocation().string() + sep + std::string(RESSOURCES_FOLDER);
+    const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
+
+    m_appContext->shaderManager.addShader(
+      shaderFolder + "CubeShader.vert", shaderFolder + "CubeShader.frag", "BasicCubeShader");
+
+    m_appContext->meshManager.addMesh(std::make_shared<Cube>(s_cubeSize), "coloredCubeMesh");
+}
 
 void Board::makePiecesFall() {
     auto view = m_registry.view<TransformComponent, CurrentFallingPieceComponent>();

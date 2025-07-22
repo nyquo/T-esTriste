@@ -12,9 +12,10 @@ set(HEADERS
     Events/WindowEvent.hpp
     Io/stb_image.h
     Io/ProgramLocation.hpp
-    TesTriste/MainLayer.hpp
+    TesTriste/AppContext.hpp
     TesTriste/Game/Board.hpp
     TesTriste/Game/Piece.hpp
+    TesTriste/MainLayer.hpp
     TesTriste/Shapes/BoardGrid.hpp
     TesTriste/Shapes/Cube.hpp
     TesTriste/TesTristeApp.hpp
@@ -38,8 +39,9 @@ set(SOURCES
     Core/Window.cpp
     Io/stb_image.cpp
     Io/ProgramLocation.cpp
-    TesTriste/MainLayer.cpp
+    TesTriste/AppContext.cpp
     TesTriste/Game/Board.cpp
+    TesTriste/MainLayer.cpp
     TesTriste/Shapes/BoardGrid.cpp
     TesTriste/Shapes/Cube.cpp
     TesTriste/TesTristeApp.cpp

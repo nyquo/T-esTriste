@@ -4,7 +4,8 @@ namespace TesTriste {
 
 TesTristeApp::TesTristeApp()
   : TesTriste::Application("TesTriste")
-  , m_mainLayer(std::make_shared<MainLayer>()) {
+  , m_appContext(std::make_shared<AppContext>())
+  , m_mainLayer(std::make_shared<MainLayer>(m_appContext, getWindow().getWidth(), getWindow().getHeight())) {
     getWindow().pushLayer(m_mainLayer);
 }
 

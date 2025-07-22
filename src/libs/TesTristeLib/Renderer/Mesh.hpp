@@ -20,7 +20,7 @@ class TET_EXPORT Mesh {
     Mesh(Mesh&& other) noexcept;
     Mesh& operator=(const Mesh& other) = delete;
     Mesh& operator=(Mesh&& other) noexcept;
-    ~Mesh();
+    virtual ~Mesh();
 
     size_t getIndicesCount() const { return m_indicesCount; }
     void bind() const;

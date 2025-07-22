@@ -2,9 +2,8 @@
 
 #include <TesTristeLib/Events/Event.hpp>
 #include <TesTristeLib/Events/KeyEvent.hpp>
-#include <TesTristeLib/Renderer/MeshManager.hpp>
 #include <TesTristeLib/Renderer/PerspectiveCamera.hpp>
-#include <TesTristeLib/Renderer/ShaderManager.hpp>
+#include <TesTristeLib/TesTriste/AppContext.hpp>
 #include <TesTristeLib/TesTriste/Game/Piece.hpp>
 
 #include <entt/entt.hpp>
@@ -39,7 +38,10 @@ class TET_EXPORT Board {
     };
 
   public:
-    Board(const std::shared_ptr<PerspectiveCamera> camera, unsigned int boardWidth = 15, unsigned int boardHeight = 40);
+    Board(std::shared_ptr<AppContext>,
+          std::shared_ptr<PerspectiveCamera> camera,
+          unsigned int boardWidth,
+          unsigned int boardHeight);
     Board(const Board& other) = delete;
     Board(Board&& other) = delete;
     Board& operator=(const Board& other) = delete;
@@ -58,6 +60,7 @@ class TET_EXPORT Board {
     bool onKeyPressed(KeyPressedEvent& e);
 
   private:
+    void initRessources();
     void makePiecesFall();
     void populatePiecesPool();
     void populateColorPool();
@@ -73,8 +76,7 @@ class TET_EXPORT Board {
     std::vector<glm::vec3> m_colorPool;
     std::shared_ptr<PerspectiveCamera> m_camera;
 
-    ShaderManager m_shaderManager;
-    MeshManager m_meshManager;
+    std::shared_ptr<AppContext> m_appContext;
     entt::registry m_registry;
 
     MeshManager::MeshID m_cubeId;

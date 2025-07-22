@@ -20,23 +20,36 @@ class TET_EXPORT MeshManager {
     MeshManager& operator=(MeshManager&& other) noexcept = delete;
     ~MeshManager() = default;
 
-    MeshID addMesh(std::unique_ptr<Mesh> mesh) {
-        static MeshID nextID = 0;
-        nextID++;
-        m_meshes[nextID] = std::move(mesh);
-        return nextID;
+    static MeshID hashMeshId(const std::string& name) {
+        std::hash<std::string> hasher;
+        return static_cast<MeshID>(hasher(name));
     }
 
-    Mesh& getMesh(MeshID id) {
+    MeshID addMesh(std::shared_ptr<Mesh> mesh, const std::string& name = "") {
+        MeshID id = hashMeshId(name);
+        if(m_meshes.contains(id)) {
+            Logger::logWarning("Mesh with ID already exists, replacing it.");
+        }
+        m_meshes[id] = std::move(mesh);
+        return id;
+    }
+
+    std::shared_ptr<Mesh> getMesh(std::string name) {
+        MeshID id = hashMeshId(name);
+        return getMesh(id);
+    }
+
+    std::shared_ptr<Mesh> getMesh(MeshID id) {
         auto it = m_meshes.find(id);
         if(it != m_meshes.end()) {
-            return *(it->second);
+            return it->second;
         }
         Logger::logError("Mesh with given ID does not exist.");
+        return {};
     }
 
   private:
-    std::unordered_map<MeshID, std::unique_ptr<Mesh>> m_meshes;
+    std::unordered_map<MeshID, std::shared_ptr<Mesh>> m_meshes;
 };
 
 }
