@@ -41,8 +41,6 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     return *this;
 }
 
-Mesh::~Mesh() {}
-
 void Mesh::bind() const {
     if(m_vertexArray) {
         m_vertexArray->bind();

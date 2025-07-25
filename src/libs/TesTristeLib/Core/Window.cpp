@@ -16,8 +16,7 @@ bool Window::s_gladInitialized = false;
 
 Window::Window(std::string name, Size size)
   : m_name(std::move(name))
-  , m_width(size.width)
-  , m_height(size.height) {
+  , m_size(size) {
     if(!s_glfwInitialized) {
         if(glfwInit() != GLFW_TRUE) {
             Logger::logError("Failed to init GLFW!");
@@ -35,11 +34,11 @@ Window::Window(std::string name, Size size)
 
     s_glfwInitialized = true;
 
-    m_window =
-      glfwCreateWindow(static_cast<int>(m_width), static_cast<int>(m_height), m_name.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(
+      static_cast<int>(m_size.width), static_cast<int>(m_size.height), m_name.c_str(), nullptr, nullptr);
     glfwMakeContextCurrent(m_window);
 
-    glfwSetWindowSizeLimits(m_window, s_minWidth, s_minHeight, GLFW_DONT_CARE, GLFW_DONT_CARE);
+    glfwSetWindowSizeLimits(m_window, s_minSize.width, s_minSize.height, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
     if(!s_gladInitialized) {
         if(!(bool)gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -67,7 +66,8 @@ Window::Window(std::string name, Size size)
     });
 
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
-        WindowResizeEvent event(width, height);
+        WindowResizeEvent event(
+          Size{ .width = static_cast<unsigned int>(width), .height = static_cast<unsigned int>(height) });
         auto eventCallBack = *(std::function<void(Event&)>*)glfwGetWindowUserPointer(window);
         eventCallBack(event);
     });
@@ -120,12 +120,12 @@ Window::Window(std::string name, Size size)
     IMGUI_CHECKVERSION();
 
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigWindowsMoveFromTitleBarOnly = true;
-    // io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    ImGuiIO& imGuiIO = ImGui::GetIO();
+    imGuiIO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    imGuiIO.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+    imGuiIO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    imGuiIO.ConfigWindowsMoveFromTitleBarOnly = true;
+    // imGuiIO.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
@@ -138,7 +138,8 @@ Window::~Window() {
 }
 
 void Window::onUpdate() {
-    glClearColor(0.0f, 0.1f, 0.0f, 1.0f);
+    glClearColor(
+      s_defaultBackgroundColor.r, s_defaultBackgroundColor.g, s_defaultBackgroundColor.b, s_defaultBackgroundColor.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glfwPollEvents();
@@ -154,15 +155,14 @@ void Window::onEvent(Event& event) {
 
 void Window::setEventCallBack(std::function<void(Event&)> callBack) { m_eventCallBack = std::move(callBack); }
 
-void Window::pushLayer(std::shared_ptr<Layer> layer) { m_layerStack.pushLayer(layer); }
-void Window::pushOverlayLayer(std::shared_ptr<Layer> layer) { m_layerStack.pushOverlayLayer(layer); }
-void Window::removeLayer(std::shared_ptr<Layer> layer) { m_layerStack.removeLayer(layer); }
-void Window::removeOverlayLayer(std::shared_ptr<Layer> layer) { m_layerStack.removeOverlayLayer(layer); }
+void Window::pushLayer(const std::shared_ptr<Layer>& layer) { m_layerStack.pushLayer(layer); }
+void Window::pushOverlayLayer(const std::shared_ptr<Layer>& layer) { m_layerStack.pushOverlayLayer(layer); }
+void Window::removeLayer(const std::shared_ptr<Layer>& layer) { m_layerStack.removeLayer(layer); }
+void Window::removeOverlayLayer(const std::shared_ptr<Layer>& layer) { m_layerStack.removeOverlayLayer(layer); }
 
-bool Window::onWindowResized(TesTriste::WindowResizeEvent& e) {
-    m_width = e.getWidth();
-    m_height = e.getHeight();
-    glViewport(0, 0, m_width, m_height);
+bool Window::onWindowResized(TesTriste::WindowResizeEvent& event) {
+    m_size = event.getSize();
+    glViewport(0, 0, static_cast<int>(m_size.width), static_cast<int>(m_size.height));
     return false;
 }
 }

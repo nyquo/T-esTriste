@@ -44,7 +44,7 @@ class TET_EXPORT VertexBuffer {
     ~VertexBuffer();
 
     void bind() const;
-    void unbind() const;
+    static void unbind();
 
     const BufferLayout& getLayout() const { return m_layout; }
     void setLayout(BufferLayout&& layout);
@@ -64,7 +64,7 @@ class TET_EXPORT IndexBuffer {
     ~IndexBuffer();
 
     void bind() const;
-    void unbind() const;
+    static void unbind();
 
     size_t getCount() const { return m_count; }
 
@@ -82,11 +82,11 @@ class TET_EXPORT VertexArray {
     VertexArray& operator=(VertexArray&& other) noexcept;
     ~VertexArray();
 
-    void addVertexBuffer(VertexBuffer& vertexBuffer);
-    void setIndexBuffer(IndexBuffer& indexBuffer);
+    void addVertexBuffer(VertexBuffer& vertexBuffer) const;
+    void setIndexBuffer(IndexBuffer& indexBuffer) const;
 
     void bind() const;
-    void unbind() const;
+    static void unbind();
 
   private:
     unsigned int m_id{ 0 };

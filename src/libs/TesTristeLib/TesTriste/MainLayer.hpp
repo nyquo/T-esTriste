@@ -22,7 +22,7 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
     static constexpr unsigned int s_boardHeight{ 12 };
     static constexpr float s_cubeSize{ 1 };
 
-    MainLayer(std::shared_ptr<AppContext> appContext, float width = 800.0F, float height = 800.0F);
+    MainLayer(std::shared_ptr<AppContext> appContext, Size size = Size{ .width = 800, .height = 600 });
     MainLayer(const MainLayer& other) = delete;
     MainLayer(MainLayer&& other) = delete;
     MainLayer operator=(const MainLayer& other) = delete;

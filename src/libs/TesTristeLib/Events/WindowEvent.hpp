@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.hpp"
+#include "TesTristeLib/Core/Types.hpp"
 
 #include <testristelib_export.h>
 
@@ -26,12 +27,10 @@ class TET_EXPORT WindowCloseEvent : public Event {
 
 class TET_EXPORT WindowResizeEvent : public Event {
   public:
-    WindowResizeEvent(unsigned int width, unsigned int height)
-      : m_width(width)
-      , m_height(height) {}
+    WindowResizeEvent(Size size)
+      : m_size(size) {}
 
-    unsigned int getWidth() const { return m_width; }
-    unsigned int getHeight() const { return m_height; }
+    Size getSize() const { return m_size; }
 
     EVENT_CLASS_CATEGORY(EventCategoryWindowEvent)
     EVENT_CLASS_TYPE(WindowResizeEvent)
@@ -39,13 +38,13 @@ class TET_EXPORT WindowResizeEvent : public Event {
 #ifndef NDEBUG
     std::string toString() const override {
         std::stringstream ss;
-        ss << getEventName() << " width: " << m_width << " | height: " << m_height;
+        ss << getEventName() << " width: " << m_size.width << " | height: " << m_size.height;
         return ss.str();
     }
 #endif
 
   private:
-    unsigned int m_width, m_height;
+    Size m_size;
 };
 
 }

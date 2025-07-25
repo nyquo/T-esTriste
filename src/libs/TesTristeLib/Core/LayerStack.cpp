@@ -60,8 +60,8 @@ void LayerStack::onUpdate() {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize = ImVec2(m_window->getWidth(), m_window->getHeight());
+    ImGuiIO& imGuiIO = ImGui::GetIO();
+    imGuiIO.DisplaySize = ImVec2(static_cast<float>(m_window->getWidth()), static_cast<float>(m_window->getHeight()));
 
     for(auto& layer : m_layers) {
         if(layer->isEnabled()) {
@@ -78,7 +78,7 @@ void LayerStack::onUpdate() {
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    if(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+    if((imGuiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) != 0) {
         GLFWwindow* backupCurrentContext = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();

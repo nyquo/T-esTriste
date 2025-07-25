@@ -1,8 +1,7 @@
 #pragma once
 
-#include <testristelib_export.h>
-
 #include <functional>
+#include <testristelib_export.h>
 #include <type_traits>
 
 #ifndef NDEBUG
@@ -94,6 +93,5 @@ class TET_EXPORT EventDispatcher {
     Event& m_event;
 };
 
-#define BIND_EVENT_FN(e) std::bind(&e, this, std::placeholders::_1)
-
+#define BIND_EVENT_FN(fn) [this](auto&& arg) { return this->fn(std::forward<decltype(arg)>(arg)); }
 }

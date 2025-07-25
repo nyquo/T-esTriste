@@ -66,6 +66,7 @@ class TET_EXPORT Board {
     void populateColorPool();
     void addNewFallingPiece();
     void removeCompletedPlanes();
+    void updatePiecesPos();
     std::vector<size_t> getPlanesToRemove() const;
     bool isPositionValid(const glm::uvec3& pos) const;
     bool isPositionOccupied(const glm::uvec3& pos) const;

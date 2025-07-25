@@ -1,6 +1,7 @@
 #pragma once
 
 #include "TesTristeLib/Core/LayerStack.hpp"
+#include "TesTristeLib/Core/Types.hpp"
 #include "TesTristeLib/Core/gl.hpp"
 #include "TesTristeLib/Events/Event.hpp"
 #include "TesTristeLib/Events/WindowEvent.hpp"
@@ -9,11 +10,6 @@
 #include <testristelib_export.h>
 
 namespace TesTriste {
-
-struct Size {
-    unsigned int width;
-    unsigned int height;
-};
 
 class TET_EXPORT Window {
   public:
@@ -29,30 +25,27 @@ class TET_EXPORT Window {
 
     void setEventCallBack(std::function<void(Event&)> callBack);
 
-    unsigned int getWidth() const { return m_width; }
-    unsigned int getHeight() const { return m_height; }
+    unsigned int getWidth() const { return m_size.width; }
+    unsigned int getHeight() const { return m_size.height; }
     GLFWwindow* getWindow() { return m_window; }
 
-    void pushLayer(std::shared_ptr<Layer> layer);
-    void pushOverlayLayer(std::shared_ptr<Layer> layer);
-    void removeLayer(std::shared_ptr<Layer> layer);
-    void removeOverlayLayer(std::shared_ptr<Layer> layer);
+    void pushLayer(const std::shared_ptr<Layer>& layer);
+    void pushOverlayLayer(const std::shared_ptr<Layer>& layer);
+    void removeLayer(const std::shared_ptr<Layer>& layer);
+    void removeOverlayLayer(const std::shared_ptr<Layer>& layer);
 
   private:
-    bool onWindowResized(TesTriste::WindowResizeEvent& e);
+    bool onWindowResized(TesTriste::WindowResizeEvent& event);
 
   private:
-    static constexpr unsigned int s_minWidth{ 400 };
-    static constexpr unsigned int s_minHeight{ 300 };
+    static constexpr Size s_minSize{ .width = 400, .height = 300 };
+    static constexpr glm::vec4 s_defaultBackgroundColor{ 0.1f, 0.1f, 0.1f, 1.0f };
 
     static bool s_glfwInitialized;
     static bool s_gladInitialized;
     std::function<void(Event&)> m_eventCallBack;
-
     std::string m_name;
-    unsigned int m_width;
-    unsigned int m_height;
-
+    Size m_size;
     GLFWwindow* m_window;
     LayerStack m_layerStack{ this };
 };

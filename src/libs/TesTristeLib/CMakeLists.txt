@@ -5,6 +5,7 @@ set(HEADERS
     Core/Layer.hpp
     Core/LayerStack.hpp
     Core/Logger.hpp
+    Core/Types.hpp
     Core/Window.hpp
     Events/Event.hpp
     Events/KeyEvent.hpp

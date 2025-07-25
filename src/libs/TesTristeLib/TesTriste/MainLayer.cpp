@@ -12,10 +12,10 @@
 
 namespace TesTriste {
 
-MainLayer::MainLayer(std::shared_ptr<AppContext> appContext, float width, float height)
-  : Layer(width, height)
+MainLayer::MainLayer(std::shared_ptr<AppContext> appContext, Size size)
+  : Layer(size)
   , m_appContext(std::move(appContext))
-  , m_camera(std::make_shared<PerspectiveCamera>(m_layerWidth, m_layerHeight, glm::vec3(0.0F, 10.0F, 10.0F))) {
+  , m_camera(std::make_shared<PerspectiveCamera>(m_layerSize, glm::vec3(0.0F, 10.0F, 10.0F))) {
     // Init camera pos
     m_cameraMover.moveCamera(0.0F, 0.0F);
 
@@ -102,8 +102,8 @@ void MainLayer::drawScene() {
 }
 
 bool MainLayer::onWindowResized(TesTriste::WindowResizeEvent& event) {
-    glViewport(0, 0, event.getWidth(), event.getHeight());
-    m_camera->setViewPortSize(event.getWidth(), event.getHeight());
+    glViewport(0, 0, static_cast<int>(event.getSize().width), static_cast<int>(event.getSize().height));
+    m_camera->setViewPortSize(event.getSize());
 
     return false;
 }

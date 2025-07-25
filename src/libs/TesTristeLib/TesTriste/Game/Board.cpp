@@ -37,7 +37,8 @@ void Board::onDraw() {
     cubeShader->setMat4("view", m_camera->getView());
     cubeShader->setMat4("projection", m_camera->getProjection());
     cubeShader->setFloat("meshSize", s_cubeSize);
-    cubeShader->setVec3("meshOrigin", glm::vec3(0.5F, 0.5F, 0.5F));
+    float middle = static_cast<float>(s_cubeSize) / 2;
+    cubeShader->setVec3("meshOrigin", glm::vec3(middle, middle, middle));
 
     static const auto cubeId = m_appContext->meshManager.hashMeshId("coloredCubeMesh");
     const auto cube = m_appContext->meshManager.getMesh(cubeId);
@@ -76,6 +77,7 @@ void Board::onUpdate() {
     }
 
     removeCompletedPlanes();
+    updatePiecesPos();
 }
 
 void Board::onEvent(TesTriste::Event& event) {
@@ -124,7 +126,7 @@ void Board::makePiecesFall() {
             auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
             auto pos = currentFallingPieceCmp.presenceMatrixPos;
             if(isPositionValid(pos)) {
-                m_gameLogicData.presenceMatrix[pos.x][pos.y][pos.z] = entity;
+                m_gameLogicData.presenceMatrix[pos.r][pos.y][pos.z] = entity;
             }
         }
         return;
@@ -249,6 +251,23 @@ void Board::removeCompletedPlanes() {
             }
         }
         yToShift++;
+    }
+}
+
+void Board::updatePiecesPos() {
+    for(size_t x = 0; x < BOARD_WIDTH; ++x) {
+        for(size_t y = 0; y < BOARD_HEIGHT; ++y) {
+            for(size_t z = 0; z < BOARD_WIDTH; ++z) {
+                if(m_gameLogicData.presenceMatrix[x][y][z].has_value()) {
+                    auto entity = m_gameLogicData.presenceMatrix[x][y][z].value();
+                    auto& transformCmp = m_registry.get<TransformComponent>(entity);
+                    transformCmp.translation =
+                      glm::vec3((static_cast<int>(x) - static_cast<int>(BOARD_WIDTH) / 2) * s_cubeSize,
+                                static_cast<int>(y) * s_cubeSize,
+                                (static_cast<int>(z) - static_cast<int>(BOARD_WIDTH) / 2) * s_cubeSize);
+                }
+            }
+        }
     }
 }
 
