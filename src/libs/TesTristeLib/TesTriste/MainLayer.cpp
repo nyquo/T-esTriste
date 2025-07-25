@@ -64,10 +64,14 @@ void MainLayer::initRessources() {
 }
 
 void MainLayer::showFps() {
+    const ImVec2 windowPos{ 10, 10 };
+    const float windowTransparency{ 0.5f };
+
     const float fps = ImGui::GetIO().Framerate;
-    ImGui::SetNextWindowPos(ImVec2(10, 10));
+
+    ImGui::SetNextWindowPos(windowPos);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::SetNextWindowBgAlpha(0.5f);
+    ImGui::SetNextWindowBgAlpha(windowTransparency);
     ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
                                    ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
                                    ImGuiWindowFlags_NoFocusOnAppearing;
@@ -81,10 +85,10 @@ void MainLayer::drawScene() {
     // General environnement of the scene will be drawn here.
     // Thinks like the board and some decoration
 
-    static const auto basicShaderId = m_appContext->shaderManager.hashShaderId("BasicShader");
+    static const auto basicShaderId = ShaderManager::hashShaderId("BasicShader");
     static const auto& basicShader = m_appContext->shaderManager.getShader(basicShaderId);
 
-    static const auto boardGridId = m_appContext->meshManager.hashMeshId("BoardGrid");
+    static const auto boardGridId = MeshManager::hashMeshId("BoardGrid");
     const auto boardMesh = dynamic_pointer_cast<BoardGrid>(m_appContext->meshManager.getMesh(boardGridId));
 
     basicShader->bind();
@@ -98,7 +102,7 @@ void MainLayer::drawScene() {
                                                   -static_cast<int>(s_boardWidth) / 2)));
 
     boardMesh->bind();
-    glDrawElements(GL_TRIANGLES, boardMesh->getIndicesCount(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(boardMesh->getIndicesCount()), GL_UNSIGNED_INT, nullptr);
 }
 
 bool MainLayer::onWindowResized(TesTriste::WindowResizeEvent& event) {

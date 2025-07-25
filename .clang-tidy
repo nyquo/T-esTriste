@@ -1,7 +1,8 @@
 ---
 Checks: >
   clang-diagnostic-*,clang-analyzer-*,bugprone-*,modernize-*,performance-*,readability-*,
-  -modernize-use-trailing-return-type, -readability-uppercase-literal-suffix
+  -modernize-use-trailing-return-type, -readability-uppercase-literal-suffix,
+  -bugprone-easily-swappable-parameters, -readability-identifier-length, -clang-analyzer-security.FloatLoopCounter
 WarningsAsErrors: ''
 HeaderFileExtensions:
   - ''

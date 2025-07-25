@@ -22,7 +22,7 @@ class TET_EXPORT BoardGrid : public Mesh {
     void addOneCell(std::vector<Vertex>& vertices,
                     std::vector<unsigned int>& indices,
                     glm::vec3 corner,
-                    unsigned int cellIndex);
+                    unsigned int cellIndex) const;
 
   private:
     float m_cellSize;

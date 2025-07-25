@@ -43,8 +43,9 @@ void CameraMover::moveCamera(double horizontalAngleOffset, double verticalOffset
     double newX = oldCameraPos.x;
     double newZ = oldCameraPos.z;
 
-    glm::vec3 newCameraPos =
-      rotateAroundPoint(glm::vec3(newX, newY, newZ), glm::vec3(0.0F, 0.0F, 0.0F), glm::radians(horizontalAngleOffset));
+    glm::vec3 newCameraPos = rotateAroundPoint(glm::vec3(newX, newY, newZ),
+                                               glm::vec3(0.0F, 0.0F, 0.0F),
+                                               glm::radians(static_cast<float>(horizontalAngleOffset)));
 
     m_camera->setPosition(newCameraPos);
     m_camera->lookAt(glm::vec3(0.0F, 0.0F, 0.0F));

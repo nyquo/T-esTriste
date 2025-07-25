@@ -13,12 +13,12 @@ BoardGrid::BoardGrid(float cellSize, unsigned int gridSideCellCount)
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
 
-    vertices.reserve(verticesPerCell * gridSideCellCount * gridSideCellCount);
-    indices.reserve(indicesPerCell * gridSideCellCount * gridSideCellCount);
+    vertices.reserve(static_cast<size_t>(verticesPerCell) * gridSideCellCount * gridSideCellCount);
+    indices.reserve(static_cast<size_t>(indicesPerCell) * gridSideCellCount * gridSideCellCount);
 
     int cellIndex = 0;
 
-    float gridWidth = cellSize * gridSideCellCount;
+    float gridWidth = cellSize * static_cast<float>(gridSideCellCount);
 
     for(float x = 0; x < gridWidth; x += cellSize) {
         for(float z = 0; z < gridWidth; z += cellSize) {
@@ -33,7 +33,7 @@ BoardGrid::BoardGrid(float cellSize, unsigned int gridSideCellCount)
 void BoardGrid::addOneCell(std::vector<Vertex>& vertices,
                            std::vector<unsigned int>& indices,
                            glm::vec3 corner,
-                           unsigned int cellIndex) {
+                           unsigned int cellIndex) const {
     float margin = m_cellSize / 16;
     float correctedCellSize = m_cellSize - 2 * margin;
 
