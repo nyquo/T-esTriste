@@ -59,11 +59,12 @@ void Board::onUpdate() {
         m_gameLogicData.currentFallingPieceReachedBottom = false;
         addNewFallingPiece();
     }
-    double currentTime = glfwGetTime();
-    double currentFallingDelayS = m_gameLogicData.currentFallingDelayMs / 1000.0F;
-    double timeSinceLastFalling = currentTime - m_gameLogicData.lastFallingPieceTime;
-    if(timeSinceLastFalling >= currentFallingDelayS) {
-        m_gameLogicData.lastFallingPieceTime = currentTime - (timeSinceLastFalling - currentFallingDelayS);
+    if(isItTimeToMakePiecesFall()) {
+        double currentTime = glfwGetTime();
+        double timeSinceLastFalling = currentTime - m_gameLogicData.lastFallingPieceTime;
+        double currentFallingDelayS = m_gameLogicData.currentFallingDelayMs / 1000.0F;
+        m_gameLogicData.lastFallingPieceTime =
+          currentTime - (timeSinceLastFalling - currentFallingDelayS); // Compensate in case of low fps
 
         makePiecesFall();
     }
@@ -118,7 +119,7 @@ void Board::makePiecesFall() {
             auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
             auto pos = currentFallingPieceCmp.presenceMatrixPos;
             if(isPositionValid(pos)) {
-                m_gameLogicData.presenceMatrix[pos.r][pos.y][pos.z] = entity;
+                m_gameLogicData.presenceMatrix.at(pos.x).at(pos.y).at(pos.z) = entity;
             }
         }
         return;
@@ -160,10 +161,10 @@ void Board::removeCompletedPlanes() {
     for(auto y : planesToRemove) {
         for(size_t x = 0; x < BOARD_WIDTH; ++x) {
             for(size_t z = 0; z < BOARD_WIDTH; ++z) {
-                if(m_registry.valid(m_gameLogicData.presenceMatrix[x][y][z].value())) {
+                if(m_registry.valid(m_gameLogicData.presenceMatrix.at(x).at(y).at(z).value())) {
                     m_registry.destroy(m_gameLogicData.presenceMatrix[x][y][z].value());
                 }
-                m_gameLogicData.presenceMatrix[x][y][z] = std::nullopt;
+                m_gameLogicData.presenceMatrix.at(x).at(y).at(z) = std::nullopt;
             }
         }
     }
@@ -196,7 +197,7 @@ void Board::updatePiecesPos() {
     for(size_t x = 0; x < BOARD_WIDTH; ++x) {
         for(size_t y = 0; y < BOARD_HEIGHT; ++y) {
             for(size_t z = 0; z < BOARD_WIDTH; ++z) {
-                if(m_gameLogicData.presenceMatrix[x][y][z].has_value()) {
+                if(m_gameLogicData.presenceMatrix.at(x).at(y).at(z).has_value()) {
                     auto entity = m_gameLogicData.presenceMatrix[x][y][z].value();
                     auto& transformCmp = m_registry.get<TransformComponent>(entity);
                     transformCmp.translation =
@@ -215,7 +216,7 @@ std::vector<size_t> Board::getPlanesToRemove() const {
         bool fullPlane = true;
         for(size_t x = 0; x < BOARD_WIDTH; ++x) {
             for(size_t z = 0; z < BOARD_WIDTH; ++z) {
-                if(!m_gameLogicData.presenceMatrix[x][y][z]) {
+                if(!m_gameLogicData.presenceMatrix.at(x).at(y).at(z)) {
                     fullPlane = false;
                     break;
                 }
@@ -238,10 +239,10 @@ bool Board::isPositionValid(const glm::uvec3& pos) const {
     if(pos.x >= m_gameLogicData.presenceMatrix.size()) {
         return false;
     }
-    if(pos.y >= m_gameLogicData.presenceMatrix[pos.x].size()) {
+    if(pos.y >= m_gameLogicData.presenceMatrix.at(pos.x).size()) {
         return false;
     }
-    if(pos.z >= m_gameLogicData.presenceMatrix[pos.x][pos.y].size()) {
+    if(pos.z >= m_gameLogicData.presenceMatrix.at(pos.x).at(pos.y).size()) {
         return false;
     }
     return true;
@@ -249,23 +250,48 @@ bool Board::isPositionValid(const glm::uvec3& pos) const {
 
 bool Board::isPositionOccupied(const glm::uvec3& pos) const {
     if(isPositionValid(pos)) {
-        return m_gameLogicData.presenceMatrix[pos.x][pos.y][pos.z].has_value();
+        return m_gameLogicData.presenceMatrix.at(pos.x).at(pos.y).at(pos.z).has_value();
     }
     return false; // Position is out of bounds
 }
 
 bool Board::isPlaneEmpty(size_t y) const {
-    if(y >= m_gameLogicData.presenceMatrix[0].size()) {
+    if(y >= m_gameLogicData.presenceMatrix.at(0).size()) {
         return false;
     }
     for(size_t x = 0; x < m_gameLogicData.presenceMatrix.size(); ++x) {
-        for(size_t z = 0; z < m_gameLogicData.presenceMatrix[x][y].size(); ++z) {
-            if(m_gameLogicData.presenceMatrix[x][y][z].has_value()) {
+        for(size_t z = 0; z < m_gameLogicData.presenceMatrix.at(x).at(y).size(); ++z) {
+            if(m_gameLogicData.presenceMatrix.at(x).at(y).at(z).has_value()) {
                 return false;
             }
         }
     }
     return true;
+}
+
+bool Board::isItTimeToMakePiecesFall() const {
+    double currentTime = glfwGetTime();
+    double currentFallingDelayS = m_gameLogicData.currentFallingDelayMs / 1000.0F;
+    double timeSinceLastFalling = currentTime - m_gameLogicData.lastFallingPieceTime;
+    return timeSinceLastFalling >= currentFallingDelayS;
+}
+
+void Board::moveFallingPieces(const glm::ivec3& translation) {
+    auto view = m_registry.view<TransformComponent, CurrentFallingPieceComponent>();
+    for(auto entity : view) {
+        auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
+        glm::ivec3 translatedPos = glm::ivec3(currentFallingPieceCmp.presenceMatrixPos) + translation;
+        if(translatedPos.x < 0 || translatedPos.z < 0 || translatedPos.x >= BOARD_WIDTH ||
+           translatedPos.z >= BOARD_WIDTH) {
+            return false; // Prevent moving out of bounds
+        }
+    }
+    for(auto entity : view) {
+        auto& transformCmp = view.get<TransformComponent>(entity);
+        transformCmp.translation += translation;
+        auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
+        currentFallingPieceCmp.presenceMatrixPos += translation;
+    }
 }
 
 bool Board::onKeyPressed(KeyPressedEvent& e) {
@@ -288,21 +314,8 @@ bool Board::onKeyPressed(KeyPressedEvent& e) {
     } else if(e.getKeyCode() == GLFW_KEY_S) {
         translation = { 0, 0, 1 };
     }
-    auto view = m_registry.view<TransformComponent, CurrentFallingPieceComponent>();
-    for(auto entity : view) {
-        auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
-        glm::ivec3 translatedPos = glm::ivec3(currentFallingPieceCmp.presenceMatrixPos) + translation;
-        if(translatedPos.x < 0 || translatedPos.z < 0 || translatedPos.x >= BOARD_WIDTH ||
-           translatedPos.z >= BOARD_WIDTH) {
-            return false; // Prevent moving out of bounds
-        }
-    }
-    for(auto entity : view) {
-        auto& transformCmp = view.get<TransformComponent>(entity);
-        transformCmp.translation += translation;
-        auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
-        currentFallingPieceCmp.presenceMatrixPos += translation;
-    }
+    moveFallingPieces(translation);
+
     return false;
 }
 }

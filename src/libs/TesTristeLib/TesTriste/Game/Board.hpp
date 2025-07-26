@@ -69,6 +69,8 @@ class TET_EXPORT Board {
     bool isPositionValid(const glm::uvec3& pos) const;
     bool isPositionOccupied(const glm::uvec3& pos) const;
     bool isPlaneEmpty(size_t y) const;
+    bool isItTimeToMakePiecesFall() const;
+    void moveFallingPieces(const glm::ivec3& translation);
 
   private:
     std::shared_ptr<AppContext> m_appContext;
