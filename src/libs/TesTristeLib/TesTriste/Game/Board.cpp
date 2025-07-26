@@ -15,12 +15,9 @@ Board::Board(std::shared_ptr<AppContext> appContext,
   , BOARD_WIDTH(boardWidth)
   , BOARD_HEIGHT(boardHeight)
   , CUBE_SIZE(cubeSize) {
-    // Initialize the presence matrix
     m_gameLogicData.presenceMatrix =
       PresenceMatrix(BOARD_WIDTH, PMSlice(BOARD_HEIGHT, PMLine(BOARD_WIDTH, std::nullopt)));
-
     initRessources();
-    addNewFallingPiece();
 }
 
 void Board::onDraw() {

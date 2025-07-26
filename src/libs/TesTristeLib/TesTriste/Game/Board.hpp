@@ -31,7 +31,7 @@ class TET_EXPORT Board {
     struct TET_EXPORT GameLogicData {
         int currentFallingDelayMs{ 1000 };
         double lastFallingPieceTime{ 0.0 };
-        bool currentFallingPieceReachedBottom{ false };
+        bool currentFallingPieceReachedBottom{ true };
         bool gameStarted{ false };
         PresenceMatrix presenceMatrix{};
     };
