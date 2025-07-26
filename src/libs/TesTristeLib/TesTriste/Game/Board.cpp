@@ -4,8 +4,6 @@
 #include <TesTristeLib/Scene/Components.hpp>
 #include <TesTristeLib/TesTriste/Shapes/Cube.hpp>
 
-#include <ctime>
-
 namespace TesTriste {
 Board::Board(std::shared_ptr<AppContext> appContext,
              std::shared_ptr<PerspectiveCamera> camera,
@@ -15,16 +13,11 @@ Board::Board(std::shared_ptr<AppContext> appContext,
   , m_camera(std::move(camera))
   , BOARD_WIDTH(boardWidth)
   , BOARD_HEIGHT(boardHeight) {
-    std::srand(std::time({}));
-
     // Initialize the presence matrix
     m_gameLogicData.presenceMatrix =
       PresenceMatrix(BOARD_WIDTH, PMSlice(BOARD_HEIGHT, PMLine(BOARD_WIDTH, std::nullopt)));
 
     initRessources();
-
-    populatePiecesPool();
-    populateColorPool();
     addNewFallingPiece();
 }
 
@@ -140,63 +133,9 @@ void Board::makePiecesFall() {
     }
 }
 
-void Board::populatePiecesPool() {
-    // clang-format off
-    m_piecesPool.emplace_back(std::vector<glm::uvec3>{
-        { 0, 0, 0 },
-        { 1, 0, 0 },
-        { 2, 0, 0 },
-        { 3, 0, 0 },
-        { 4, 0, 0 }
-    });
-
-    /*m_piecesPool.emplace_back(std::vector<glm::uvec3>{
-        { 0, 0, 0 },
-        { 1, 0, 0 },
-        { 2, 0, 0 },
-        { 3, 0, 0 },
-        { 0, 1, 0 }
-    });
-
-    m_piecesPool.emplace_back(std::vector<glm::uvec3>{
-        { 1, 0, 1 },
-        { 1, 1, 1 },
-        { 1, 1, 0 },
-        { 1, 1, 2 },
-        { 0, 1, 1 },
-        { 2, 1, 1 }
-    });
-
-    m_piecesPool.emplace_back(std::vector<glm::uvec3>{
-        { 0, 0, 0 },
-        { 1, 0, 0 },
-        { 2, 0, 0 },
-        { 0, 0, 1 },
-        { 1, 0, 1 },
-        { 2, 0, 1 }
-    });*/
-    // clang-format on
-}
-
-void Board::populateColorPool() {
-    m_colorPool.emplace_back(1.0F, 0.0F, 0.0F);                       // Red
-    m_colorPool.emplace_back(0.0F, 1.0F, 0.0F);                       // Green
-    m_colorPool.emplace_back(0.0F, 0.0F, 1.0F);                       // Blue
-    m_colorPool.emplace_back(1.0F, 1.0F, 0.0F);                       // Yellow
-    m_colorPool.emplace_back(0.901960784F, 0.423529412, 0.749019608); // Purple-ish
-    m_colorPool.emplace_back(1.0F, 1.0F, 1.0F);                       // White
-}
-
 void Board::addNewFallingPiece() {
-    if(m_piecesPool.empty() || m_colorPool.empty()) {
-        return;
-    }
-
-    size_t randomPieceIndex = rand() % m_piecesPool.size();
-    const auto& piece = m_piecesPool[randomPieceIndex];
-
-    size_t randomColorIndex = rand() % m_colorPool.size();
-    const auto& color = m_colorPool[randomColorIndex];
+    const auto& piece = m_piecePool.getRandomPiece();
+    const auto& color = m_colorPool.getRandomColor();
 
     for(const auto& pos : piece.getCubePositions()) {
         glm::vec3 position = glm::vec3((static_cast<int>(pos.x) - static_cast<int>(piece.getWidth()) / 2) * s_cubeSize,
@@ -290,7 +229,7 @@ std::vector<size_t> Board::getPlanesToRemove() const {
             planesToRemove.push_back(y);
         }
     }
-    return std::move(planesToRemove);
+    return planesToRemove;
 }
 
 bool Board::isPositionValid(const glm::uvec3& pos) const {

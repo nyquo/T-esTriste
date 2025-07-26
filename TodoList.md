@@ -4,4 +4,4 @@
     - could be allow classe like Board.hpp/cpp to transform the onDraw method to onDraw(Renderer& renderer). It would then call some func like renderer->drawMesh(mesh)
 - move Size struct of MainLayer in a utils file and replace all height width param by size
 - use Size{.width = something, .height=something}
-- init piecesPool and color pool elsewhere
+- Add mecanism in pools to make less picked color/pieces to get higher changes of being picked

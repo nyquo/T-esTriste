@@ -5,6 +5,7 @@
 #include <TesTristeLib/Renderer/PerspectiveCamera.hpp>
 #include <TesTristeLib/TesTriste/AppContext.hpp>
 #include <TesTristeLib/TesTriste/Game/Piece.hpp>
+#include <TesTristeLib/TesTriste/Game/Pools.hpp>
 
 #include <entt/entt.hpp>
 #include <memory>
@@ -62,8 +63,6 @@ class TET_EXPORT Board {
   private:
     void initRessources();
     void makePiecesFall();
-    void populatePiecesPool();
-    void populateColorPool();
     void addNewFallingPiece();
     void removeCompletedPlanes();
     void updatePiecesPos();
@@ -73,14 +72,12 @@ class TET_EXPORT Board {
     bool isPlaneEmpty(size_t y) const;
 
   private:
-    std::vector<Piece> m_piecesPool;
-    std::vector<glm::vec3> m_colorPool;
-    std::shared_ptr<PerspectiveCamera> m_camera;
-
     std::shared_ptr<AppContext> m_appContext;
+    std::shared_ptr<PerspectiveCamera> m_camera;
+    PiecePool m_piecePool;
+    ColorPool m_colorPool;
     entt::registry m_registry;
 
-    MeshManager::MeshID m_cubeId;
     static constexpr int s_cubeSize = 1.0F;
     const unsigned int BOARD_WIDTH;
     const unsigned int BOARD_HEIGHT;

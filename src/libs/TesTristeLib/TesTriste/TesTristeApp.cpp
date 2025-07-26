@@ -1,5 +1,7 @@
 #include "TesTristeApp.hpp"
 
+#include <ctime>
+
 namespace TesTriste {
 
 TesTristeApp::TesTristeApp()
@@ -7,6 +9,7 @@ TesTristeApp::TesTristeApp()
   , m_appContext(std::make_shared<AppContext>())
   , m_mainLayer(std::make_shared<MainLayer>(
       m_appContext, Size{ .width = getWindow().getWidth(), .height = getWindow().getHeight() })) {
+    std::srand(std::time({}));
     getWindow().pushLayer(m_mainLayer);
 }
 
