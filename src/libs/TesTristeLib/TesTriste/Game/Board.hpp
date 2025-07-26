@@ -32,6 +32,7 @@ class TET_EXPORT Board {
         int currentFallingDelayMs{ 1000 };
         double lastFallingPieceTime{ 0.0 };
         bool currentFallingPieceReachedBottom{ false };
+        bool gameStarted{ false };
         PresenceMatrix presenceMatrix{};
     };
 
@@ -80,8 +81,6 @@ class TET_EXPORT Board {
     const unsigned int BOARD_WIDTH;
     const unsigned int BOARD_HEIGHT;
     const float CUBE_SIZE;
-
-    bool m_gameStarted{ false };
 };
 
 }

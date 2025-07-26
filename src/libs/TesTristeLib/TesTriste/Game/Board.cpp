@@ -52,7 +52,7 @@ void Board::onDraw() {
 }
 
 void Board::onUpdate() {
-    if(!m_gameStarted) {
+    if(!m_gameLogicData.gameStarted) {
         return;
     }
     if(m_gameLogicData.currentFallingPieceReachedBottom) {
@@ -81,11 +81,11 @@ void Board::onEvent(TesTriste::Event& event) {
 }
 
 void Board::startGame() {
-    m_gameStarted = true;
+    m_gameLogicData.gameStarted = true;
     m_gameLogicData.lastFallingPieceTime = glfwGetTime();
 }
 
-void Board::pauseGame() { m_gameStarted = false; }
+void Board::pauseGame() { m_gameLogicData.gameStarted = false; }
 
 void Board::initRessources() {
     const char sep = std::filesystem::path::preferred_separator;
@@ -272,7 +272,7 @@ bool Board::isPlaneEmpty(size_t y) const {
 }
 
 bool Board::onKeyPressed(KeyPressedEvent& e) {
-    if(!m_gameStarted) {
+    if(!m_gameLogicData.gameStarted) {
         return false;
     }
     if(e.getKeyCode() == GLFW_KEY_SPACE) {
