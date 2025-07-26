@@ -46,7 +46,7 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
     std::shared_ptr<PerspectiveCamera> m_camera;
     CameraMover m_cameraMover{ m_camera };
     std::shared_ptr<AppContext> m_appContext;
-    Board m_board{ m_appContext, m_camera, s_boardWidth, s_boardHeight };
+    Board m_board{ m_appContext, m_camera, s_boardWidth, s_boardHeight, s_cubeSize };
 
     // Temp
     glm::vec3 m_meshColor{ 0.2f, 0.2f, 0.2f };

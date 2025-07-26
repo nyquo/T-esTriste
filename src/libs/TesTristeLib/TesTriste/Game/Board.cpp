@@ -8,11 +8,13 @@ namespace TesTriste {
 Board::Board(std::shared_ptr<AppContext> appContext,
              std::shared_ptr<PerspectiveCamera> camera,
              unsigned int boardWidth,
-             unsigned int boardHeight)
+             unsigned int boardHeight,
+             float cubeSize)
   : m_appContext(std::move(appContext))
   , m_camera(std::move(camera))
   , BOARD_WIDTH(boardWidth)
-  , BOARD_HEIGHT(boardHeight) {
+  , BOARD_HEIGHT(boardHeight)
+  , CUBE_SIZE(cubeSize) {
     // Initialize the presence matrix
     m_gameLogicData.presenceMatrix =
       PresenceMatrix(BOARD_WIDTH, PMSlice(BOARD_HEIGHT, PMLine(BOARD_WIDTH, std::nullopt)));
@@ -29,8 +31,8 @@ void Board::onDraw() {
 
     cubeShader->setMat4("view", m_camera->getView());
     cubeShader->setMat4("projection", m_camera->getProjection());
-    cubeShader->setFloat("meshSize", s_cubeSize);
-    float middle = static_cast<float>(s_cubeSize) / 2;
+    cubeShader->setFloat("meshSize", CUBE_SIZE);
+    float middle = CUBE_SIZE / 2;
     cubeShader->setVec3("meshOrigin", glm::vec3(middle, middle, middle));
 
     static const auto cubeId = m_appContext->meshManager.hashMeshId("coloredCubeMesh");
@@ -94,7 +96,7 @@ void Board::initRessources() {
     m_appContext->shaderManager.addShader(
       shaderFolder + "CubeShader.vert", shaderFolder + "CubeShader.frag", "BasicCubeShader");
 
-    m_appContext->meshManager.addMesh(std::make_shared<Cube>(s_cubeSize), "coloredCubeMesh");
+    m_appContext->meshManager.addMesh(std::make_shared<Cube>(CUBE_SIZE), "coloredCubeMesh");
 }
 
 void Board::makePiecesFall() {
@@ -127,7 +129,7 @@ void Board::makePiecesFall() {
 
     for(auto entity : view) {
         auto& transformCmp = view.get<TransformComponent>(entity);
-        transformCmp.translation.y -= s_cubeSize;
+        transformCmp.translation.y -= CUBE_SIZE;
         auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
         currentFallingPieceCmp.presenceMatrixPos.y -= 1.0F;
     }
@@ -138,9 +140,9 @@ void Board::addNewFallingPiece() {
     const auto& color = m_colorPool.getRandomColor();
 
     for(const auto& pos : piece.getCubePositions()) {
-        glm::vec3 position = glm::vec3((static_cast<int>(pos.x) - static_cast<int>(piece.getWidth()) / 2) * s_cubeSize,
-                                       (static_cast<int>(pos.y) + BOARD_HEIGHT) * s_cubeSize,
-                                       (static_cast<int>(pos.z) - static_cast<int>(piece.getDepth()) / 2) * s_cubeSize);
+        glm::vec3 position = glm::vec3((static_cast<int>(pos.x) - static_cast<int>(piece.getWidth()) / 2) * CUBE_SIZE,
+                                       (static_cast<int>(pos.y) + BOARD_HEIGHT) * CUBE_SIZE,
+                                       (static_cast<int>(pos.z) - static_cast<int>(piece.getDepth()) / 2) * CUBE_SIZE);
         glm::vec3 presenceMatrixPos = glm::uvec3(BOARD_WIDTH / 2 - static_cast<int>(piece.getWidth()) / 2 + pos.x,
                                                  pos.y + BOARD_HEIGHT,
                                                  BOARD_WIDTH / 2 - static_cast<int>(piece.getDepth()) / 2 + pos.z);
@@ -201,9 +203,9 @@ void Board::updatePiecesPos() {
                     auto entity = m_gameLogicData.presenceMatrix[x][y][z].value();
                     auto& transformCmp = m_registry.get<TransformComponent>(entity);
                     transformCmp.translation =
-                      glm::vec3((static_cast<int>(x) - static_cast<int>(BOARD_WIDTH) / 2) * s_cubeSize,
-                                static_cast<int>(y) * s_cubeSize,
-                                (static_cast<int>(z) - static_cast<int>(BOARD_WIDTH) / 2) * s_cubeSize);
+                      glm::vec3((static_cast<int>(x) - static_cast<int>(BOARD_WIDTH) / 2) * CUBE_SIZE,
+                                static_cast<int>(y) * CUBE_SIZE,
+                                (static_cast<int>(z) - static_cast<int>(BOARD_WIDTH) / 2) * CUBE_SIZE);
                 }
             }
         }

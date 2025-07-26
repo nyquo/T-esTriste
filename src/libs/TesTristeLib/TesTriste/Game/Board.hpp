@@ -21,9 +21,6 @@ struct TET_EXPORT ColorComponent {
     glm::vec3 color{ 0.0F, 0.0F, 0.0F };
 };
 
-// For now the drawing, logic, etc is all done in the same class, maybe this should be separated in different "systems"
-// later
-
 class TET_EXPORT Board {
     using OptEntity = std::optional<entt::entity>;
     // PM -> Presence Matrix
@@ -42,7 +39,8 @@ class TET_EXPORT Board {
     Board(std::shared_ptr<AppContext>,
           std::shared_ptr<PerspectiveCamera> camera,
           unsigned int boardWidth,
-          unsigned int boardHeight);
+          unsigned int boardHeight,
+          float cubeSize);
     Board(const Board& other) = delete;
     Board(Board&& other) = delete;
     Board& operator=(const Board& other) = delete;
@@ -77,14 +75,13 @@ class TET_EXPORT Board {
     PiecePool m_piecePool;
     ColorPool m_colorPool;
     entt::registry m_registry;
+    GameLogicData m_gameLogicData;
 
-    static constexpr int s_cubeSize = 1.0F;
     const unsigned int BOARD_WIDTH;
     const unsigned int BOARD_HEIGHT;
+    const float CUBE_SIZE;
 
     bool m_gameStarted{ false };
-
-    GameLogicData m_gameLogicData;
 };
 
 }
