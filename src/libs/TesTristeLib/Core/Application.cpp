@@ -17,7 +17,7 @@ void Application::onEvent(Event& event) {
 }
 
 void Application::run() {
-    while(m_continueRunning && !glfwWindowShouldClose(m_mainWindow->getWindow())) {
+    while(m_continueRunning && glfwWindowShouldClose(m_mainWindow->getWindow()) != GLFW_TRUE) {
         m_mainWindow->onUpdate();
     }
 }

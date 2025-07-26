@@ -1,5 +1,6 @@
 #pragma once
 
+#include "TesTristeLib/Core/Types.hpp"
 #include "TesTristeLib/Events/Event.hpp"
 
 #include <testristelib_export.h>
@@ -10,7 +11,7 @@ class Window;
 
 class TET_EXPORT Layer {
   public:
-    Layer(float layerWidth = 0, float layerHeight = 0);
+    Layer(Size size = Size{ .width = 800, .height = 600 });
     Layer(const Layer& other) = delete;
     Layer(Layer&& other) = delete;
     Layer operator=(const Layer& other) = delete;
@@ -24,13 +25,11 @@ class TET_EXPORT Layer {
     [[nodiscard]] bool isEnabled() const { return m_enabled; }
     void setEnabled(bool enabled) { m_enabled = enabled; }
 
-    void setLayerSize(float layerWidth, float layerHeight);
+    void setLayerSize(Size size);
 
   protected:
     bool m_enabled{ true };
-
-    float m_layerWidth;
-    float m_layerHeight;
+    Size m_layerSize{ .width = 0, .height = 0 };
 };
 
 }

@@ -1,0 +1,6 @@
+- Separate the Board class more properly
+- The drawing part should replicate the board class data 
+- May be worth a try to create a basic Renderer with a Command queue
+    - could be allow classe like Board.hpp/cpp to transform the onDraw method to onDraw(Renderer& renderer). It would then call some func like renderer->drawMesh(mesh)
+- use Size{.width = something, .height=something}
+- Add mecanism in pools to make less picked color/pieces to get higher changes of being picked

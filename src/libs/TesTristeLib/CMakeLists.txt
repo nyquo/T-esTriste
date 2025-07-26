@@ -5,20 +5,28 @@ set(HEADERS
     Core/Layer.hpp
     Core/LayerStack.hpp
     Core/Logger.hpp
+    Core/Types.hpp
     Core/Window.hpp
     Events/Event.hpp
     Events/KeyEvent.hpp
     Events/MouseEvent.hpp
     Events/WindowEvent.hpp
     Io/stb_image.h
-    TesTriste/TesTristeApp.hpp
+    Io/ProgramLocation.hpp
+    TesTriste/AppContext.hpp
+    TesTriste/Game/Board.hpp
+    TesTriste/Game/Piece.hpp
     TesTriste/MainLayer.hpp
+    TesTriste/Shapes/BoardGrid.hpp
     TesTriste/Shapes/Cube.hpp
+    TesTriste/TesTristeApp.hpp
     Renderer/Buffers.hpp
     Renderer/Camera.hpp
     Renderer/Mesh.hpp
+    Renderer/MeshManager.hpp
     Renderer/PerspectiveCamera.hpp
     Renderer/Shader.hpp
+    Renderer/ShaderManager.hpp
     Renderer/Vertex.hpp
     Scene/CameraMover.hpp
     Scene/Components.hpp
@@ -31,9 +39,13 @@ set(SOURCES
     Core/Logger.cpp
     Core/Window.cpp
     Io/stb_image.cpp
-    TesTriste/TesTristeApp.cpp
+    Io/ProgramLocation.cpp
+    TesTriste/AppContext.cpp
+    TesTriste/Game/Board.cpp
     TesTriste/MainLayer.cpp
+    TesTriste/Shapes/BoardGrid.cpp
     TesTriste/Shapes/Cube.cpp
+    TesTriste/TesTristeApp.cpp
     Renderer/Buffers.cpp
     Renderer/Mesh.cpp
     Renderer/PerspectiveCamera.cpp
@@ -42,6 +54,8 @@ set(SOURCES
 )
 
 set(RESSOURCES
+    TesTriste/Shaders/CubeShader.frag
+    TesTriste/Shaders/CubeShader.vert
     TesTriste/Shaders/BasicShader.frag
     TesTriste/Shaders/BasicShader.vert
 )

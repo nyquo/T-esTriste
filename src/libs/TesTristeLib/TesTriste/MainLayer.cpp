@@ -1,6 +1,8 @@
 #include "MainLayer.hpp"
 
 #include <TesTristeLib/Core/Logger.hpp>
+#include <TesTristeLib/Events/Event.hpp>
+#include <TesTristeLib/Io/ProgramLocation.hpp>
 #include <TesTristeLib/Scene/Components.hpp>
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -10,57 +12,28 @@
 
 namespace TesTriste {
 
-MainLayer::MainLayer(float width, float height)
-  : Layer(width, height)
-  , m_camera(std::make_shared<PerspectiveCamera>(m_layerWidth, m_layerHeight, glm::vec3(0.0F, 0.0F, 10.0F))) {
-    m_shader = std::make_unique<Shader>(
-      std::string(RESSOURCES_FOLDER) + sep + "TesTriste" + sep + "Shaders" + sep + "BasicShader.vert",
-      std::string(RESSOURCES_FOLDER) + sep + "TesTriste" + sep + "Shaders" + sep + "BasicShader.frag");
+MainLayer::MainLayer(std::shared_ptr<AppContext> appContext, Size size)
+  : Layer(size)
+  , m_appContext(std::move(appContext))
+  , m_camera(std::make_shared<PerspectiveCamera>(m_layerSize, glm::vec3(0.0F, 10.0F, 10.0F))) {
+    // Init camera pos
+    m_cameraMover.moveCamera(0.0F, 0.0F);
 
-    auto entity = m_registry.create();
-    m_registry.emplace<TesTriste::TransformComponent>(
-      entity, glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec3(1.0F, 1.0F, 1.0F));
-    for(auto x = -1; x <= 2; x += 2) {
-        for(auto y = -1; y <= 2; y += 2) {
-            for(auto z = -1; z <= 2; z += 2) {
-                auto entity = m_registry.create();
-                m_registry.emplace<TesTriste::TransformComponent>(
-                  entity,
-                  glm::vec3(x * s_cubeSize, y * s_cubeSize, z * s_cubeSize),
-                  glm::vec3(0.0F, 0.0F, 0.0F),
-                  glm::vec3(1.0F, 1.0F, 1.0F));
-            }
-        }
-    }
-
-    // OpenGL
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    initRessources();
 }
 
-void MainLayer::onEvent(TesTriste::Event& event) { m_cameraMover.onEvent(event); }
+void MainLayer::onEvent(TesTriste::Event& event) {
+    EventDispatcher dispatcher(event);
+    dispatcher.dispatch<TesTriste::WindowResizeEvent>(BIND_EVENT_FN(MainLayer::onWindowResized));
+    m_cameraMover.onEvent(event);
+    m_board.onEvent(event);
+}
 
 void MainLayer::onUpdate() {
-    glViewport(0, 0, m_layerWidth, m_layerHeight);
-    // Todo Move this in an event when the window is resized
-    m_camera->setViewPortSize(m_layerWidth, m_layerHeight);
-
     m_cameraMover.update();
-
-    m_shader->bind();
-    m_shader->setMat4("view", m_camera->getView());
-    m_shader->setMat4("projection", m_camera->getProjection());
-    m_shader->setVec3("meshColor", m_meshColor.r, m_meshColor.g, m_meshColor.b);
-    m_shader->setFloat("meshSize", s_cubeSize);
-    m_cube.bind();
-    m_shader->setVec3("meshOrigin", glm::vec3(0.0F, 0.0F, 0.0F));
-
-    auto view = m_registry.view<const TransformComponent>();
-    for(const auto& entity : view) {
-        const auto mat = view.get<const TransformComponent>(entity).getTransformMatrix();
-
-        m_shader->setMat4("model", mat);
-        glDrawElements(GL_TRIANGLES, m_cube.getIndicesCount(), GL_UNSIGNED_INT, 0);
-    }
+    m_board.onUpdate();
+    m_board.onDraw();
+    drawScene();
 }
 
 void MainLayer::onImGuiRender() {
@@ -68,14 +41,37 @@ void MainLayer::onImGuiRender() {
 
     ImGui::Begin("Settings");
     ImGui::DragFloat3("Mesh color", (float*)&m_meshColor, .01, 0.0f, 1.0f);
+    if(ImGui::Button("Play")) {
+        m_board.startGame();
+    }
+    ImGui::SameLine();
+    if(ImGui::Button("Pause")) {
+        m_board.pauseGame();
+    }
+    ImGui::DragInt("Falling delay (ms)", &m_fallingDelayMs, 10.0f, 100, 5000);
+    m_board.setFallingDelay(m_fallingDelayMs);
     ImGui::End();
 }
 
+void MainLayer::initRessources() {
+    const char sep = std::filesystem::path::preferred_separator;
+    const std::string ressourceFolder =
+      ProgramLocation::getProgramLocation().string() + sep + std::string(RESSOURCES_FOLDER);
+    const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
+    m_appContext->shaderManager.addShader(
+      shaderFolder + "BasicShader.vert", shaderFolder + "BasicShader.frag", "BasicShader");
+    m_appContext->meshManager.addMesh(std::make_unique<BoardGrid>(s_cubeSize, s_boardWidth), "BoardGrid");
+}
+
 void MainLayer::showFps() {
+    const ImVec2 windowPos{ 10, 10 };
+    const float windowTransparency{ 0.5f };
+
     const float fps = ImGui::GetIO().Framerate;
-    ImGui::SetNextWindowPos(ImVec2(10, 10));
+
+    ImGui::SetNextWindowPos(windowPos);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-    ImGui::SetNextWindowBgAlpha(0.5f);
+    ImGui::SetNextWindowBgAlpha(windowTransparency);
     ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
                                    ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings |
                                    ImGuiWindowFlags_NoFocusOnAppearing;
@@ -84,4 +80,36 @@ void MainLayer::showFps() {
     ImGui::End();
     ImGui::PopStyleVar();
 }
+
+void MainLayer::drawScene() {
+    // General environnement of the scene will be drawn here.
+    // Thinks like the board and some decoration
+
+    static const auto basicShaderId = ShaderManager::hashShaderId("BasicShader");
+    static const auto& basicShader = m_appContext->shaderManager.getShader(basicShaderId);
+
+    static const auto boardGridId = MeshManager::hashMeshId("BoardGrid");
+    const auto boardMesh = dynamic_pointer_cast<BoardGrid>(m_appContext->meshManager.getMesh(boardGridId));
+
+    basicShader->bind();
+    basicShader->setMat4("view", m_camera->getView());
+    basicShader->setMat4("projection", m_camera->getProjection());
+    basicShader->setVec3("meshColor", m_meshColor);
+    basicShader->setMat4("model",
+                         glm::translate(glm::mat4(1.0F),
+                                        glm::vec3(-static_cast<int>(s_boardWidth) / 2,
+                                                  -boardMesh->getCellHeight(),
+                                                  -static_cast<int>(s_boardWidth) / 2)));
+
+    boardMesh->bind();
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(boardMesh->getIndicesCount()), GL_UNSIGNED_INT, nullptr);
+}
+
+bool MainLayer::onWindowResized(TesTriste::WindowResizeEvent& event) {
+    glViewport(0, 0, static_cast<int>(event.getSize().width), static_cast<int>(event.getSize().height));
+    m_camera->setViewPortSize(event.getSize());
+
+    return false;
+}
+
 }

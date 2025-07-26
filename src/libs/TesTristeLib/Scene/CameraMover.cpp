@@ -12,11 +12,11 @@ void CameraMover::update() {
     auto* currentWindow = glfwGetCurrentContext();
     if(!Input::isMouseButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE)) {
         m_firstMouse = true;
-        if(currentWindow && m_enabled) {
+        if(currentWindow != nullptr && m_enabled) {
             glfwSetInputMode(currentWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
     } else {
-        if(currentWindow && m_enabled) {
+        if(currentWindow != nullptr && m_enabled) {
             glfwSetInputMode(currentWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
     }
@@ -27,8 +27,8 @@ void CameraMover::update() {
 
 void CameraMover::setCamera(const std::shared_ptr<PerspectiveCamera>& camera) { m_camera = camera; }
 
-void CameraMover::onEvent(Event& e) {
-    EventDispatcher dispatcher(e);
+void CameraMover::onEvent(Event& event) {
+    EventDispatcher dispatcher(event);
     dispatcher.dispatch<MouseScrolledEvent>(BIND_EVENT_FN(CameraMover::onMouseScrolled));
     dispatcher.dispatch<MouseMovedEvent>(BIND_EVENT_FN(CameraMover::onMouseMoved));
 }
@@ -36,6 +36,20 @@ void CameraMover::onEvent(Event& e) {
 void CameraMover::enable() { m_enabled = true; }
 
 void CameraMover::disable() { m_enabled = false; }
+
+void CameraMover::moveCamera(double horizontalAngleOffset, double verticalOffset) {
+    auto oldCameraPos = m_camera->getPosition();
+    double newY = std::clamp(oldCameraPos.y + verticalOffset, m_minHeight, m_maxHeight);
+    double newX = oldCameraPos.x;
+    double newZ = oldCameraPos.z;
+
+    glm::vec3 newCameraPos = rotateAroundPoint(glm::vec3(newX, newY, newZ),
+                                               glm::vec3(0.0F, 0.0F, 0.0F),
+                                               glm::radians(static_cast<float>(horizontalAngleOffset)));
+
+    m_camera->setPosition(newCameraPos);
+    m_camera->lookAt(glm::vec3(0.0F, 0.0F, 0.0F));
+}
 
 glm::vec3 CameraMover::rotateAroundPoint(const glm::vec3& pointToRotate,
                                          const glm::vec3& pivot,
@@ -65,25 +79,14 @@ bool CameraMover::onMouseMoved(MouseMovedEvent& event) {
             m_lastMouseY = event.getY();
             m_firstMouse = false;
         }
-        float xOffset = m_lastMouseX - event.getX();
-        float yOffset = event.getY() - m_lastMouseY;
+        double xOffset = m_lastMouseX - event.getX();
+        double yOffset = event.getY() - m_lastMouseY;
         m_lastMouseX = event.getX();
         m_lastMouseY = event.getY();
         xOffset *= m_mouseSensitivityX;
         yOffset *= m_mouseSensitivityY;
 
-        auto oldCameraPos = m_camera->getPosition();
-        float newY = std::clamp(oldCameraPos.y + yOffset, m_minHeight, m_maxHeight);
-        float newX = oldCameraPos.x;
-        float newZ = oldCameraPos.z;
-
-        glm::vec3 newCameraPos =
-          rotateAroundPoint(glm::vec3(newX, newY, newZ), glm::vec3(0.0F, 0.0F, 0.0F), glm::radians(xOffset));
-
-        m_camera->setPosition(newCameraPos);
-        m_camera->lookAt(glm::vec3(0.0F, 0.0F, 0.0F));
-
-        // m_camera->rotateCamera(xOffset, yOffset);
+        moveCamera(xOffset, yOffset);
     }
 
     return false;

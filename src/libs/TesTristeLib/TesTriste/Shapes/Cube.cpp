@@ -3,13 +3,14 @@
 namespace TesTriste {
 
 Cube::Cube(float size) {
+    const size_t nbVerticesPerCube{ 8 };
     std::vector<Vertex> vertices;
-    vertices.reserve(8);
+    vertices.reserve(nbVerticesPerCube);
 
     // TODO Fix normals and texture coordinates
-    for(float z = -size / 2; z <= size / 2; z += size) {
-        for(float y = -size / 2; y <= size / 2; y += size) {
-            for(float x = -size / 2; x <= size / 2; x += size) {
+    for(float z = 0; z <= size; z += size) {
+        for(float y = 0; y <= size; y += size) {
+            for(float x = 0; x <= size; x += size) {
                 vertices.emplace_back(glm::vec3(x, y, z), glm::vec3(0.0F, 0.0F, 0.0F), glm::vec2(0.0F, 0.0F));
             }
         }
@@ -28,7 +29,7 @@ Cube::Cube(float size) {
     };
 
     // Insert triangle in clockwise order for each face
-    indices.reserve(faces.size() * 6);
+    indices.reserve(faces.size() * faces.at(0).size());
     for(auto face : faces) {
         indices.push_back(face[0]);
         indices.push_back(face[2]);

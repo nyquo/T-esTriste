@@ -2,12 +2,8 @@
 
 namespace TesTriste {
 
-Layer::Layer(float layerWidth, float layerHeight)
-  : m_layerWidth(layerWidth)
-  , m_layerHeight(layerHeight) {}
+Layer::Layer(Size size)
+  : m_layerSize(size) {}
 
-void Layer::setLayerSize(float layerWidth, float layerHeight) {
-    m_layerWidth = layerWidth;
-    m_layerHeight = layerHeight;
-}
+void Layer::setLayerSize(Size size) { m_layerSize = size; }
 }
