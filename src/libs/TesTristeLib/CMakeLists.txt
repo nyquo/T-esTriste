@@ -19,6 +19,7 @@ set(HEADERS
     TesTriste/MainLayer.hpp
     TesTriste/Shapes/BoardGrid.hpp
     TesTriste/Shapes/Cube.hpp
+    TesTriste/Shapes/Corner.hpp
     TesTriste/TesTristeApp.hpp
     Renderer/Buffers.hpp
     Renderer/Camera.hpp
