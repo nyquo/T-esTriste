@@ -3,6 +3,7 @@
 #include <TesTristeLib/Renderer/Buffers.hpp>
 #include <TesTristeLib/Renderer/Vertex.hpp>
 
+#include <glm/glm.hpp>
 #include <memory>
 #include <testristelib_export.h>
 #include <vector>
@@ -23,10 +24,13 @@ class TET_EXPORT Mesh {
     virtual ~Mesh() = default;
 
     size_t getIndicesCount() const { return m_indicesCount; }
+    glm::vec3 getSize() const { return m_size; }
     void bind() const;
 
   protected:
     void reInit(std::vector<Vertex>&& vertices, std::vector<unsigned int>&& indices);
+
+    glm::vec3 m_size{ 0.0F, 0.0F, 0.0F };
 
   private:
     std::vector<Vertex> m_vertices;

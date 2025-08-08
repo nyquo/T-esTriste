@@ -9,6 +9,7 @@
 #include <TesTristeLib/TesTriste/AppContext.hpp>
 #include <TesTristeLib/TesTriste/Game/Board.hpp>
 #include <TesTristeLib/TesTriste/Shapes/BoardGrid.hpp>
+#include <TesTristeLib/TesTriste/Shapes/Corner.hpp>
 
 #include <filesystem>
 #include <memory>
@@ -19,7 +20,7 @@ namespace TesTriste {
 class TET_EXPORT MainLayer : public TesTriste::Layer {
   public:
     static constexpr unsigned int s_boardWidth{ 5 };
-    static constexpr unsigned int s_boardHeight{ 12 };
+    static constexpr unsigned int s_boardHeight{ 5 };
     static constexpr float s_cubeSize{ 1 };
 
     MainLayer(std::shared_ptr<AppContext> appContext, Size size = Size{ .width = 800, .height = 600 });
@@ -49,7 +50,6 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
     Board m_board{ m_appContext, m_camera, s_boardWidth, s_boardHeight, s_cubeSize };
 
     // Temp
-    glm::vec3 m_meshColor{ 0.2f, 0.2f, 0.2f };
     int m_fallingDelayMs{ 1000 };
 };
 

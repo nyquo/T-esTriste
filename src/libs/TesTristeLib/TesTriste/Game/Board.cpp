@@ -138,9 +138,10 @@ void Board::addNewFallingPiece() {
     const auto& color = m_colorPool.getRandomColor();
 
     for(const auto& pos : piece.getCubePositions()) {
-        glm::vec3 position = glm::vec3((static_cast<int>(pos.x) - static_cast<int>(piece.getWidth()) / 2) * CUBE_SIZE,
-                                       (static_cast<int>(pos.y) + BOARD_HEIGHT) * CUBE_SIZE,
-                                       (static_cast<int>(pos.z) - static_cast<int>(piece.getDepth()) / 2) * CUBE_SIZE);
+        glm::vec3 position =
+          glm::vec3((static_cast<float>(pos.x) - static_cast<float>(piece.getWidth()) / 2) * CUBE_SIZE,
+                    (static_cast<float>(pos.y) + BOARD_HEIGHT) * CUBE_SIZE,
+                    (static_cast<float>(pos.z) - static_cast<float>(piece.getDepth()) / 2) * CUBE_SIZE);
         glm::vec3 presenceMatrixPos = glm::uvec3(BOARD_WIDTH / 2 - static_cast<int>(piece.getWidth()) / 2 + pos.x,
                                                  pos.y + BOARD_HEIGHT,
                                                  BOARD_WIDTH / 2 - static_cast<int>(piece.getDepth()) / 2 + pos.z);
@@ -201,9 +202,9 @@ void Board::updatePiecesPos() {
                     auto entity = m_gameLogicData.presenceMatrix[x][y][z].value();
                     auto& transformCmp = m_registry.get<TransformComponent>(entity);
                     transformCmp.translation =
-                      glm::vec3((static_cast<int>(x) - static_cast<int>(BOARD_WIDTH) / 2) * CUBE_SIZE,
+                      glm::vec3((static_cast<int>(x) - static_cast<float>(BOARD_WIDTH) / 2) * CUBE_SIZE,
                                 static_cast<int>(y) * CUBE_SIZE,
-                                (static_cast<int>(z) - static_cast<int>(BOARD_WIDTH) / 2) * CUBE_SIZE);
+                                (static_cast<int>(z) - static_cast<float>(BOARD_WIDTH) / 2) * CUBE_SIZE);
                 }
             }
         }
@@ -283,7 +284,7 @@ void Board::moveFallingPieces(const glm::ivec3& translation) {
         glm::ivec3 translatedPos = glm::ivec3(currentFallingPieceCmp.presenceMatrixPos) + translation;
         if(translatedPos.x < 0 || translatedPos.z < 0 || translatedPos.x >= BOARD_WIDTH ||
            translatedPos.z >= BOARD_WIDTH) {
-            return false; // Prevent moving out of bounds
+            return; // Prevent moving out of bounds
         }
     }
     for(auto entity : view) {

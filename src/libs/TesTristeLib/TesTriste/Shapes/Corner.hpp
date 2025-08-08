@@ -68,6 +68,7 @@ class TET_EXPORT Corner : public Mesh {
         }
 
         Mesh::reInit(std::move(vertices), std::move(indices));
+        m_size = glm::vec3(2 * size, 2 * size, 2 * size);
     }
     Corner(const Corner& other) = delete;
     Corner(Corner&& other) noexcept = delete;

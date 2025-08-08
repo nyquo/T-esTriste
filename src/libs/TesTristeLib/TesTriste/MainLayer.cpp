@@ -40,7 +40,6 @@ void MainLayer::onImGuiRender() {
     showFps();
 
     ImGui::Begin("Settings");
-    ImGui::DragFloat3("Mesh color", (float*)&m_meshColor, .01, 0.0f, 1.0f);
     if(ImGui::Button("Play")) {
         m_board.startGame();
     }
@@ -61,6 +60,7 @@ void MainLayer::initRessources() {
     m_appContext->shaderManager.addShader(
       shaderFolder + "BasicShader.vert", shaderFolder + "BasicShader.frag", "BasicShader");
     m_appContext->meshManager.addMesh(std::make_unique<BoardGrid>(s_cubeSize, s_boardWidth), "BoardGrid");
+    m_appContext->meshManager.addMesh(std::make_unique<Corner>(0.2F), "Corner");
 }
 
 void MainLayer::showFps() {
@@ -88,21 +88,59 @@ void MainLayer::drawScene() {
     static const auto basicShaderId = ShaderManager::hashShaderId("BasicShader");
     static const auto& basicShader = m_appContext->shaderManager.getShader(basicShaderId);
 
-    static const auto boardGridId = MeshManager::hashMeshId("BoardGrid");
-    const auto boardMesh = dynamic_pointer_cast<BoardGrid>(m_appContext->meshManager.getMesh(boardGridId));
-
     basicShader->bind();
     basicShader->setMat4("view", m_camera->getView());
     basicShader->setMat4("projection", m_camera->getProjection());
-    basicShader->setVec3("meshColor", m_meshColor);
+
+    static const auto boardGridId = MeshManager::hashMeshId("BoardGrid");
+    const auto boardMesh = dynamic_pointer_cast<BoardGrid>(m_appContext->meshManager.getMesh(boardGridId));
+    const auto boardColor = glm::vec4(0.3f, 0.3f, 0.3f, 1.0f);
+    basicShader->setVec4("meshColor", boardColor);
     basicShader->setMat4("model",
                          glm::translate(glm::mat4(1.0F),
-                                        glm::vec3(-static_cast<int>(s_boardWidth) / 2,
+                                        glm::vec3(-static_cast<float>(s_boardWidth) / 2,
                                                   -boardMesh->getCellHeight(),
-                                                  -static_cast<int>(s_boardWidth) / 2)));
-
+                                                  -static_cast<float>(s_boardWidth) / 2)));
     boardMesh->bind();
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(boardMesh->getIndicesCount()), GL_UNSIGNED_INT, nullptr);
+
+    static const auto cornerId = MeshManager::hashMeshId("Corner");
+    const auto cornerMesh = dynamic_pointer_cast<Corner>(m_appContext->meshManager.getMesh(cornerId));
+    const auto cornerColor = glm::vec4(0.5f, 0.5f, 0.5f, 0.8f);
+    basicShader->setVec4("meshColor", cornerColor);
+    cornerMesh->bind();
+
+    glm::vec3 bottomLeftPos = glm::vec3(-static_cast<float>(s_boardWidth) / 2 - cornerMesh->getSize().x / 2,
+                                        s_boardHeight - cornerMesh->getSize().y / 2,
+                                        static_cast<float>(s_boardWidth) / 2 + cornerMesh->getSize().z / 2);
+    auto bottomLeftModel = glm::translate(glm::mat4(1.0F), bottomLeftPos);
+
+    glm::vec3 bottomRightPos = glm::vec3(static_cast<float>(s_boardWidth) / 2 + cornerMesh->getSize().x / 2,
+                                         s_boardHeight - cornerMesh->getSize().y / 2,
+                                         static_cast<float>(s_boardWidth) / 2 + cornerMesh->getSize().z / 2);
+    auto bottomRightModel =
+      glm::rotate(glm::translate(glm::mat4(1.0F), bottomRightPos), glm::pi<float>() / 2, glm::vec3(0.0F, 1.0F, 0.0F));
+
+    glm::vec3 topLeftPos = glm::vec3(-static_cast<float>(s_boardWidth) / 2 - cornerMesh->getSize().x / 2,
+                                     s_boardHeight - cornerMesh->getSize().y / 2,
+                                     -static_cast<float>(s_boardWidth) / 2 - cornerMesh->getSize().z / 2);
+    auto topLeftModel =
+      glm::rotate(glm::translate(glm::mat4(1.0F), topLeftPos), -glm::pi<float>() / 2, glm::vec3(0.0F, 1.0F, 0.0F));
+
+    glm::vec3 topRightPos = glm::vec3(static_cast<float>(s_boardWidth) / 2 + cornerMesh->getSize().x / 2,
+                                      s_boardHeight - cornerMesh->getSize().y / 2,
+                                      -static_cast<float>(s_boardWidth) / 2 - cornerMesh->getSize().z / 2);
+    auto topRightModel =
+      glm::rotate(glm::translate(glm::mat4(1.0F), topRightPos), glm::pi<float>(), glm::vec3(0.0F, 1.0F, 0.0F));
+
+    basicShader->setMat4("model", bottomLeftModel);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(cornerMesh->getIndicesCount()), GL_UNSIGNED_INT, nullptr);
+    basicShader->setMat4("model", bottomRightModel);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(cornerMesh->getIndicesCount()), GL_UNSIGNED_INT, nullptr);
+    basicShader->setMat4("model", topLeftModel);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(cornerMesh->getIndicesCount()), GL_UNSIGNED_INT, nullptr);
+    basicShader->setMat4("model", topRightModel);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(cornerMesh->getIndicesCount()), GL_UNSIGNED_INT, nullptr);
 }
 
 bool MainLayer::onWindowResized(TesTriste::WindowResizeEvent& event) {
