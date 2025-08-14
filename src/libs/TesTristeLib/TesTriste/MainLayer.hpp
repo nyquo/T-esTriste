@@ -19,8 +19,8 @@ namespace TesTriste {
 
 class TET_EXPORT MainLayer : public TesTriste::Layer {
   public:
-    static constexpr unsigned int s_boardWidth{ 5 };
-    static constexpr unsigned int s_boardHeight{ 5 };
+    static constexpr unsigned int s_boardWidth{ 7 };
+    static constexpr unsigned int s_boardHeight{ 7 };
     static constexpr float s_cubeSize{ 1 };
 
     MainLayer(std::shared_ptr<AppContext> appContext, Size size = Size{ .width = 800, .height = 600 });

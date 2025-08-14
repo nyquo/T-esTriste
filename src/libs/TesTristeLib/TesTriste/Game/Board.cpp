@@ -4,6 +4,8 @@
 #include <TesTristeLib/Scene/Components.hpp>
 #include <TesTristeLib/TesTriste/Shapes/Cube.hpp>
 
+#include <array>
+
 namespace TesTriste {
 Board::Board(std::shared_ptr<AppContext> appContext,
              std::shared_ptr<PerspectiveCamera> camera,
@@ -305,15 +307,30 @@ bool Board::onKeyPressed(KeyPressedEvent& e) {
         }
         return false;
     }
+
+    // Find the correct direction to move pieces given the camera direction
+    auto cameraDirection = glm::normalize(m_camera->getDirection());
+    // front, back, left, right
+    std::array<std::pair<float, glm::vec3>, 4> dots = {
+        { { glm::dot(glm::vec3(0.0F, 0.0f, -1.0f), cameraDirection), glm::vec3(0.0F, 0.0F, -1.0F) },
+          { glm::dot(glm::vec3(0.0F, 0.0f, 1.0f), cameraDirection), glm::vec3(0.0F, 0.0F, 1.0F) },
+          { glm::dot(glm::vec3(-1.0F, 0.0f, 0.0f), cameraDirection), glm::vec3(-1.0F, 0.0F, 0.0F) },
+          { glm::dot(glm::vec3(1.0F, 0.0f, 0.0f), cameraDirection), glm::vec3(1.0F, 0.0F, 0.0F) } }
+    };
+
+    auto forward =
+      std::max_element(dots.begin(), dots.end(), [](auto& l, auto& r) { return l.first < r.first; })->second;
+    auto right = glm::cross(forward, glm::vec3(0.0F, 1.0F, 0.0F));
+
     glm::ivec3 translation{ 0, 0, 0 };
     if(e.getKeyCode() == GLFW_KEY_A) {
-        translation = { -1, 0, 0 };
+        translation -= right;
     } else if(e.getKeyCode() == GLFW_KEY_D) {
-        translation = { 1, 0, 0 };
+        translation += right;
     } else if(e.getKeyCode() == GLFW_KEY_W) {
-        translation = { 0, 0, -1 };
+        translation += forward;
     } else if(e.getKeyCode() == GLFW_KEY_S) {
-        translation = { 0, 0, 1 };
+        translation -= forward;
     }
     moveFallingPieces(translation);
 
