@@ -288,6 +288,9 @@ void Board::moveFallingPieces(const glm::ivec3& translation) {
            translatedPos.z >= BOARD_WIDTH) {
             return; // Prevent moving out of bounds
         }
+        if(isPositionOccupied(translatedPos)) {
+            return; // Prevent passing through other pieces
+        }
     }
     for(auto entity : view) {
         auto& transformCmp = view.get<TransformComponent>(entity);
