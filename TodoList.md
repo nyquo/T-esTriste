@@ -7,3 +7,5 @@
 - Add a ghost of the pos of the piece when it will reach the floor
 - Add way to turn pieces
 - Add visual effect and lighting
+- Color in red pieces that are above the limit
+- Display the limit with a visual indicator

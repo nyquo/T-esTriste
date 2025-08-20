@@ -87,6 +87,12 @@ void Board::startGame() {
 
 void Board::pauseGame() { m_gameLogicData.gameStarted = false; }
 
+int Board::getScore() { return m_gameLogicData.score; }
+
+bool Board::isGameLost() { return m_gameLogicData.gameLost; }
+
+bool Board::isGameStarted() { return m_gameLogicData.gameStarted; }
+
 void Board::initRessources() {
     const char sep = std::filesystem::path::preferred_separator;
     const std::string ressourceFolder =
@@ -120,6 +126,10 @@ void Board::makePiecesFall() {
         for(auto entity : view) {
             auto& currentFallingPieceCmp = view.get<CurrentFallingPieceComponent>(entity);
             auto pos = currentFallingPieceCmp.presenceMatrixPos;
+            if(pos.y >= BOARD_HEIGHT) { // Part of the piece above the limit
+                m_gameLogicData.gameLost = true;
+                m_gameLogicData.gameStarted = false;
+            }
             if(isPositionValid(pos)) {
                 m_gameLogicData.presenceMatrix.at(pos.x).at(pos.y).at(pos.z) = entity;
             }
@@ -160,6 +170,9 @@ void Board::removeCompletedPlanes() {
     if(planesToRemove.empty()) {
         return;
     }
+
+    // Give more points for several planes removes at once
+    m_gameLogicData.score += (100 * planesToRemove.size() * std::pow(1.5, planesToRemove.size() - 1));
 
     for(auto y : planesToRemove) {
         for(size_t x = 0; x < BOARD_WIDTH; ++x) {

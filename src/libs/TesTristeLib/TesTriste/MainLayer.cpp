@@ -40,15 +40,19 @@ void MainLayer::onImGuiRender() {
     showFps();
 
     ImGui::Begin("Settings");
-    if(ImGui::Button("Play")) {
-        m_board.startGame();
+
+    if(m_board.isGameStarted()) {
+        if(ImGui::Button("Pause")) {
+            m_board.pauseGame();
+        }
+        ImGui::Text("Current Score %d", m_board.getScore());
+    } else if(!m_board.isGameLost()) {
+        if(ImGui::Button("Play")) {
+            m_board.startGame();
+        }
+    } else {
+        ImGui::Text("Game ended. Final Score: %d", m_board.getScore());
     }
-    ImGui::SameLine();
-    if(ImGui::Button("Pause")) {
-        m_board.pauseGame();
-    }
-    ImGui::DragInt("Falling delay (ms)", &m_fallingDelayMs, 10.0f, 100, 5000);
-    m_board.setFallingDelay(m_fallingDelayMs);
     ImGui::End();
 }
 

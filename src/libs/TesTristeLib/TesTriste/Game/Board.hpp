@@ -34,6 +34,8 @@ class TET_EXPORT Board {
         bool currentFallingPieceReachedBottom{ true };
         bool gameStarted{ false };
         PresenceMatrix presenceMatrix{};
+        int score{ 0 };
+        bool gameLost{ false };
     };
 
   public:
@@ -53,6 +55,9 @@ class TET_EXPORT Board {
     void onUpdate();
     void startGame();
     void pauseGame();
+    int getScore();
+    bool isGameLost();
+    bool isGameStarted();
 
     void setFallingDelay(int delayMs) { m_gameLogicData.currentFallingDelayMs = delayMs; }
 
