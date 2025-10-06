@@ -63,8 +63,17 @@ void MainLayer::initRessources() {
     const std::string shaderFolder = ressourceFolder + sep + "TesTriste" + sep + "Shaders" + sep;
     m_appContext->shaderManager.addShader(
       shaderFolder + "BasicShader.vert", shaderFolder + "BasicShader.frag", "BasicShader");
+    m_appContext->shaderManager.addShader(shaderFolder + "SkyBox.vert", shaderFolder + "SkyBox.frag", "SkyBox");
     m_appContext->meshManager.addMesh(std::make_unique<BoardGrid>(s_cubeSize, s_boardWidth), "BoardGrid");
     m_appContext->meshManager.addMesh(std::make_unique<Corner>(0.2F), "Corner");
+    m_skybox = std::make_unique<CubeMap>(std::vector<std::filesystem::path>{
+      ressourceFolder + sep + "TesTriste" + sep + "Assets" + sep + "skybox" + sep + "right.jpg",
+      ressourceFolder + sep + "TesTriste" + sep + "Assets" + sep + "skybox" + sep + "left.jpg",
+      ressourceFolder + sep + "TesTriste" + sep + "Assets" + sep + "skybox" + sep + "top.jpg",
+      ressourceFolder + sep + "TesTriste" + sep + "Assets" + sep + "skybox" + sep + "bottom.jpg",
+      ressourceFolder + sep + "TesTriste" + sep + "Assets" + sep + "skybox" + sep + "front.jpg",
+      ressourceFolder + sep + "TesTriste" + sep + "Assets" + sep + "skybox" + sep + "back.jpg",
+    });
 }
 
 void MainLayer::showFps() {
@@ -145,6 +154,20 @@ void MainLayer::drawScene() {
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(cornerMesh->getIndicesCount()), GL_UNSIGNED_INT, nullptr);
     basicShader->setMat4("model", topRightModel);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(cornerMesh->getIndicesCount()), GL_UNSIGNED_INT, nullptr);
+
+    drawCubeMap();
+}
+
+void MainLayer::drawCubeMap() {
+    glDepthFunc(GL_LEQUAL);
+    glDepthMask(GL_FALSE);
+    static const auto skyboxShaderId = ShaderManager::hashShaderId("SkyBox");
+    static const auto& skyboxShader = m_appContext->shaderManager.getShader(skyboxShaderId);
+    skyboxShader->bind();
+    skyboxShader->setMat4("view", glm::mat4(glm::mat3(m_camera->getView())));
+    skyboxShader->setMat4("projection", m_camera->getProjection());
+    m_skybox->draw();
+    glDepthMask(GL_TRUE);
 }
 
 bool MainLayer::onWindowResized(TesTriste::WindowResizeEvent& event) {

@@ -23,6 +23,7 @@ set(HEADERS
     TesTriste/TesTristeApp.hpp
     Renderer/Buffers.hpp
     Renderer/Camera.hpp
+    Renderer/CubeMap.hpp
     Renderer/Mesh.hpp
     Renderer/MeshManager.hpp
     Renderer/PerspectiveCamera.hpp
@@ -59,6 +60,15 @@ set(RESSOURCES
     TesTriste/Shaders/CubeShader.vert
     TesTriste/Shaders/BasicShader.frag
     TesTriste/Shaders/BasicShader.vert
+    TesTriste/Shaders/SkyBox.frag
+    TesTriste/Shaders/SkyBox.vert
+
+    TesTriste/Assets/skybox/back.jpg
+    TesTriste/Assets/skybox/bottom.jpg
+    TesTriste/Assets/skybox/front.jpg
+    TesTriste/Assets/skybox/left.jpg
+    TesTriste/Assets/skybox/right.jpg
+    TesTriste/Assets/skybox/top.jpg
 )
 
 Tet_add_library(TesTristeLib

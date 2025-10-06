@@ -3,6 +3,7 @@
 #include <TesTristeLib/Core/Layer.hpp>
 #include <TesTristeLib/Events/WindowEvent.hpp>
 #include <TesTristeLib/Renderer/Buffers.hpp>
+#include <TesTristeLib/Renderer/CubeMap.hpp>
 #include <TesTristeLib/Renderer/PerspectiveCamera.hpp>
 #include <TesTristeLib/Renderer/Shader.hpp>
 #include <TesTristeLib/Scene/CameraMover.hpp>
@@ -38,6 +39,7 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
     void initRessources();
     void showFps();
     void drawScene();
+    void drawCubeMap();
 
     // Event handlers
   private:
@@ -48,6 +50,7 @@ class TET_EXPORT MainLayer : public TesTriste::Layer {
     CameraMover m_cameraMover{ m_camera };
     std::shared_ptr<AppContext> m_appContext;
     Board m_board{ m_appContext, m_camera, s_boardWidth, s_boardHeight, s_cubeSize };
+    std::unique_ptr<CubeMap> m_skybox;
 
     // Temp
     int m_fallingDelayMs{ 1000 };
